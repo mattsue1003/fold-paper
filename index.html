@@ -64,12 +64,46 @@ input[type=text]{width:100%;padding:9px 12px;border:1.5px solid var(--line);bord
 .dlb:disabled{opacity:.45;cursor:not-allowed}
 #status{min-height:1.4em;font-size:14px;color:var(--muted);margin:4px 2px 0}
 .desk{background:var(--desk);padding:18px 20px 40px;min-width:0}
-.deskbar{font-size:14px;color:var(--muted);margin:0 0 10px 4px;font-weight:700}
+.deskbar{font-size:14px;color:var(--muted);margin:0 0 12px 4px;font-weight:700;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 #pages{display:flex;flex-direction:column;align-items:center;gap:22px}
 .sheet{margin:0}
 .sheet canvas{display:block;background:#fff;box-shadow:0 1px 2px rgba(80,50,20,.12),0 8px 24px rgba(80,50,20,.10);border-radius:2px}
 .sheet figcaption{text-align:center;font-size:13px;color:var(--muted);margin-top:6px}
 .empty{padding:60px 20px;color:var(--muted);text-align:center;max-width:320px}
+
+.playsec{background:var(--chip);margin:8px -12px;padding:14px 12px!important;border-radius:14px;border-bottom:0!important}
+.playlist{display:flex;flex-wrap:wrap;gap:8px}
+.playb{border:0;background:var(--accent);color:#fff;font-weight:700;font-size:15px;border-radius:99px;padding:8px 16px;cursor:pointer}
+.playb:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.hint2{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+#player{position:fixed;inset:0;z-index:50;background:#FFF6EC;color:#2A2622;display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+#player[hidden]{display:none}
+.pl-top{display:flex;align-items:center;gap:16px;padding:12px 20px;flex-wrap:wrap}
+.pl-title{font-size:clamp(20px,2.4vw,32px);font-weight:900}
+.pl-dots{display:flex;align-items:center;gap:6px;flex:1;flex-wrap:wrap}
+.pl-dots i{width:14px;height:14px;border-radius:50%;background:#EAD9C6;display:inline-block}
+.pl-dots i.past{background:#F4A93C}.pl-dots i.now{background:#E8552D;transform:scale(1.25)}
+.pl-dots span{margin-left:8px;font-weight:700;color:#7A6B5C;font-size:18px}
+.pl-tools{display:flex;gap:8px}
+.pl-tools button{border:1.5px solid #E6D3BD;background:#fff;border-radius:99px;padding:6px 14px;font-size:15px;cursor:pointer;color:#2A2622}
+.pl-main{flex:1;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:16px;padding:0 20px;min-height:0}
+.pl-stage{background:#fff;border-radius:22px;box-shadow:0 6px 24px rgba(120,70,30,.10);min-height:0;position:relative}
+.pl-stage canvas{position:absolute;inset:0}
+.pl-side{display:flex;flex-direction:column;justify-content:center;gap:18px;padding:10px}
+.pl-num{font-size:clamp(34px,4.6vw,72px);font-weight:900;color:#E8552D;line-height:1}
+.pl-text{font-size:clamp(26px,3.3vw,54px);font-weight:900;line-height:1.35}
+.pl-legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:clamp(14px,1.4vw,20px);color:#5A4E42}
+.pl-legend i{display:inline-block;width:34px;height:0;border-top:3px dashed #1F5FAD;vertical-align:middle;margin-right:8px}
+.pl-legend i.lm{border-top:3px dashed #C8321E}
+.pl-bottom{display:flex;justify-content:center;gap:14px;padding:14px 20px 18px}
+.pl-btn{border:0;border-radius:18px;padding:14px 34px;font-size:clamp(18px,2vw,28px);font-weight:900;cursor:pointer;background:#fff;color:#2A2622;box-shadow:0 3px 0 #E6D3BD}
+.pl-btn.main{background:#E8552D;color:#fff;box-shadow:0 4px 0 #B8431F;min-width:200px}
+.pl-btn.main.ready{animation:nudge 1.4s ease-in-out infinite}
+.pl-btn:disabled{opacity:.4;cursor:not-allowed;animation:none}
+.pl-btn:focus-visible,.pl-tools button:focus-visible{outline:3px solid #F4A93C;outline-offset:2px}
+@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){.pl-btn.main.ready{animation:none}}
+@media (max-width:820px){.pl-main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}.pl-side{gap:8px}.pl-btn{padding:12px 18px}}
 footer{padding:18px 32px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
 @media (max-width:860px){.wrap{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid var(--line)}.top{padding:22px 18px 16px}.panel{padding:12px 18px 24px}.desk{padding:14px 10px 30px}.mgrid{grid-template-columns:repeat(4,1fr)}}
 </style>
@@ -88,6 +122,11 @@ footer{padding:18px 32px;border-top:1px solid var(--line);color:var(--muted);fon
     <section>
       <div class="row"><h2>1. 選作品</h2><span><button class="mini" id="selAll" type="button">全選</button><button class="mini" id="selNone" type="button">清除</button></span></div>
       <div id="models"></div>
+    </section>
+    <section class="playsec">
+      <h2>動畫帶領（投影上課用）</h2>
+      <div id="playList" class="playlist"></div>
+      <div class="hint2">每一步都有摺紙動畫，播完會停住，等大家摺好再按「下一步」。可以用鍵盤左右鍵或簡報筆翻頁。</div>
     </section>
     <section>
       <h2>2. 要印哪些頁面</h2>
@@ -124,7 +163,7 @@ footer{padding:18px 32px;border-top:1px solid var(--line);color:var(--muted);fon
     </section>
   </aside>
   <main class="desk">
-    <div class="deskbar" id="pcount"></div>
+    <div class="deskbar"><span id="pcount"></span><span id="playTop" class="playlist"></span></div>
     <div id="pages"></div>
   </main>
 </div>
@@ -133,12 +172,6 @@ footer{padding:18px 32px;border-top:1px solid var(--line);color:var(--muted);fon
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-// ===== 摺紙作品庫 =====
-// 座標：0–100 的正方形（跳跳蛙是 50×100 長方形）。
-// sh: [填色, 多邊形點]；填色 w 白色面、w2 白色重疊、c 彩色面、c2 彩色重疊
-// ln: [線型, x1,y1,x2,y2]；v 谷摺、m 山摺、x 已壓好的摺痕、e 紙的邊
-// ar: [x1,y1,x2,y2,彎度,種類]；f 往前摺、m 往後摺、p 往內推
-// cr: 摺線紙上的摺線 [線型, x1,y1,x2,y2, 第幾步]（以步驟 1 朝上那一面來看）
 const D = [50,0,100,50,50,100,0,50];
 const SQ = [0,0,100,0,100,100,0,100];
 const TRI_DN = [0,50,100,50,50,100];
@@ -173,121 +206,6 @@ const FDIA=[12.5,37.5,25,25,37.5,37.5,25,50];
 const PB=[50,15,85,50,50,85,15,50];
 const PETAL=[50,-14,70.5,35.5,50,85,29.5,35.5];
 
-const STEP1_TOP_DOWN={t:'菱形擺放，白色面朝上。上角往下對摺，變成三角形',sh:[['w',D]],ln:[['v',0,50,100,50]],ar:[[50,5,50,95,-.32,'f']]};
-const STEP1_BOTTOM_UP={t:'菱形擺放，白色面朝上。下角往上對摺，變成三角形',sh:[['w',D]],ln:[['v',0,50,100,50]],ar:[[50,95,50,5,-.32,'f']]};
-const DIAG_CREASE=(txt)=>({t:txt||'白色面朝上。兩條對角線各對摺一次，壓出叉線再打開',sh:[['w',SQ]],ln:[['v',0,0,100,100],['v',100,0,0,100]],ar:[[94,6,8,92,-.25,'f']]});
-const BLINTZ={t:'四個角都往中心點摺',sh:[['w',SQ]],ln:[['x',0,0,100,100],['x',100,0,0,100],['v',50,0,0,50],['v',50,0,100,50],['v',100,50,50,100],['v',50,100,0,50]],ar:[[4,4,44,44,-.35,'f'],[96,4,56,44,.35,'f'],[96,96,56,56,-.35,'f'],[4,96,44,56,.35,'f']]};
-
-const MODELS=[
-{id:'dog',name:'狗臉',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_TOP_DOWN,
-  {t:'左右兩個角往下摺，做出耳朵',sh:[['c',TRI_DN]],ln:[['v',25,50,15,65],['v',75,50,85,65]],ar:[[4,54,31,74,.45,'f'],[96,54,69,74,-.45,'f']]},
-  {t:'下面的尖角往上摺一小段',sh:[['c',[25,50,75,50,85,65,50,100,15,65]],['c2',[25,50,15,65,34.62,73.08]],['c2',[75,50,85,65,65.38,73.08]]],ln:[['v',35,85,65,85]],ar:[[50,97,50,73,-.6,'f']]},
-  {t:'完成！幫小狗畫上表情',done:1,sh:[['c',[25,50,75,50,85,65,65,85,35,85,15,65]],['c2',[25,50,15,65,34.62,73.08]],['c2',[75,50,85,65,65.38,73.08]],['w',[35,85,65,85,50,70]]],vb:[8,40,84,70]}
-],cr:[['v',0,50,100,50,1],['v',25,50,15,65,2],['m',25,50,15,35,2],['v',75,50,85,65,2],['m',75,50,85,35,2],['m',35,15,65,15,3]]},
-
-{id:'cat',name:'貓臉',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_BOTTOM_UP,
-  {t:'上面的尖角往下摺，碰到底邊',sh:[['c',TRI_UP]],ln:[['v',25,25,75,25]],ar:[[50,4,50,46,-.5,'f']]},
-  {t:'左右兩個角往上摺，做出耳朵',sh:[['c',[0,50,100,50,75,25,25,25]],['c2',[25,25,75,25,50,50]]],ln:[['v',35,50,15,35],['v',65,50,85,35]],ar:[[3,49,24,15,-.4,'f'],[97,49,76,15,.4,'f']]},
-  {t:'翻到背面',flip:1,sh:[['c',[35,50,65,50,85,35,75,25,25,25,15,35]],['c2',[25,25,75,25,50,50]],['c2',[35,50,15,35,25.2,16.4]],['c2',[65,50,85,35,74.8,16.4]]],vb:[4,4,92,56]},
-  {t:'完成！幫小貓畫上表情',done:1,sh:[['c2',[35,50,15,35,25.2,16.4]],['c2',[65,50,85,35,74.8,16.4]],['c',[35,50,65,50,85,35,75,25,25,25,15,35]]],vb:[4,4,92,56]}
-],cr:[['v',0,50,100,50,1],['v',25,25,75,25,2],['m',25,75,75,75,2],['v',35,50,15,35,3],['m',35,50,15,65,3],['v',65,50,85,35,3],['m',65,50,85,65,3]]},
-
-{id:'tulip',name:'鬱金香',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_TOP_DOWN,
-  {t:'左邊的角沿著虛線往上摺',sh:[['c',TRI_DN]],ln:[['v',25,50,50,100]],ar:[[4,53,38,31,-.5,'f']]},
-  {t:'右邊的角也往上摺',sh:[['c',[25,50,100,50,50,100]],['c2',[40,30,25,50,50,100]]],ln:[['v',75,50,50,100]],ar:[[96,53,62,31,.5,'f']]},
-  {t:'完成！貼在紙上，畫上花莖和葉子',done:1,sh:[['c',[25,50,75,50,50,100]],['c2',[40,30,25,50,50,100]],['c2',[60,30,75,50,50,100]]],vb:[10,24,80,80]}
-],cr:[['v',0,50,100,50,1],['v',25,50,50,100,2],['m',25,50,50,0,2],['v',75,50,50,100,3],['m',75,50,50,0,3]]},
-
-{id:'cup',name:'杯子',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_BOTTOM_UP,
-  {t:'左邊的角往右摺，尖角碰到右邊的斜邊',sh:[['c',TRI_UP]],ln:[['v',...CG,...CF]],ar:[[3,48,68,22,-.3,'f']]},
-  {t:'右邊的角也往左摺，碰到左邊的斜邊',sh:[['c',[...CG,...CF,100,50,50,0]],['c2',CUP_F1]],ln:[['v',...CQ,...CF2]],ar:[[97,48,32,22,.3,'f']],vb:[-4,-6,108,62]},
-  {t:'上面尖角的前面一層，往下摺',sh:[['c',[...CG,...CF,...CF2,...CQ,50,0]],['c2',CUP_F1],['c2',CUP_F2]],ln:[['v',...CG,...CQ]],ar:[[50,3,50,38,-.6,'f']],vb:[14,-4,72,58]},
-  {t:'後面那一層往後摺',sh:[['c',[...CG,...CF,...CF2,...CQ,50,0]],['c2',CUP_F1],['c2',CUP_F2],['w',[...CG,...CQ,50,41.42]]],ln:[['m',...CG,...CQ]],ar:[[57,4,57,18,-.9,'m']],vb:[14,-4,72,58]},
-  {t:'完成！打開上面的開口，就是一個小杯子',done:1,sh:[['c',[...CG,...CF,...CF2,...CQ]],['c2',CUP_F1],['c2',CUP_F2],['w',[...CG,...CQ,50,41.42]]],vb:[18,6,64,52]}
-],cr:[['v',0,50,100,50,1],['v',...CG,...CF,2],['m',29.29,79.29,...CF,2],['v',...CQ,...CF2,3],['m',70.71,79.29,...CF2,3],['m',29.29,79.29,70.71,79.29,4],['m',...CG,...CQ,5]]},
-
-{id:'helmet',name:'頭盔',lv:2,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_TOP_DOWN,
-  {t:'左右兩個角往下摺，對齊下面的尖角',sh:[['c',TRI_DN]],ln:[['v',50,50,25,75],['v',50,50,75,75]],ar:[[3,53,45,97,.35,'f'],[97,53,55,97,-.35,'f']]},
-  {t:'剛摺下來的兩個尖角，再往上摺到頂端',sh:[['c',HD],['c2',[50,50,25,75,50,100]],['c2',[50,50,75,75,50,100]]],ln:[['v',25,75,75,75]],ar:[[46,97,46,55,-.45,'f'],[54,97,54,55,.45,'f']],vb:[12,44,76,62]},
-  {t:'兩個尖角往外斜摺，做出頭盔的角',sh:[['c',HD],['c2',[25,75,50,50,50,75]],['c2',[75,75,50,50,50,75]]],ln:[['v',50,75,40,60],['v',50,75,60,60]],ar:[[48,52,27,63,.4,'f'],[52,52,73,63,-.4,'f']],vb:[12,44,76,62]},
-  {t:'下面尖角的前面一層，往上摺',sh:[['c',HD],['c2',[25,75,40,60,50,75]],['c2',[75,75,60,60,50,75]],['c2',[22,58,40,60,50,75]],['c2',[78,58,60,60,50,75]]],ln:[['v',32,82,68,82]],ar:[[50,98,50,68,-.5,'f']],vb:[12,44,76,62]},
-  {t:'後面那一層往後摺',sh:[['c',HD],['c2',[25,75,40,60,50,75]],['c2',[75,75,60,60,50,75]],['c2',[22,58,40,60,50,75]],['c2',[78,58,60,60,50,75]],['w',[32,82,68,82,50,64]]],ln:[['m',32,82,68,82]],ar:[[57,86,57,98,.9,'m']],vb:[12,44,76,62]},
-  {t:'完成！可以戴在頭上當裝飾',done:1,sh:[['c',[25,75,50,50,75,75,68,82,32,82]],['c2',[25,75,40,60,50,75]],['c2',[75,75,60,60,50,75]],['c2',[22,58,40,60,50,75]],['c2',[78,58,60,60,50,75]],['w',[32,82,68,82,50,64]]],vb:[16,44,68,44]}
-],cr:[['v',0,50,100,50,1],['v',50,50,25,75,2],['m',50,50,25,25,2],['v',50,50,75,75,2],['m',50,50,75,25,2]]},
-
-{id:'plane',name:'紙飛機',lv:2,frame:'s',vb:[-4,-4,108,120],steps:[
-  {t:'白色面朝上。左右往後對摺，壓出中線再打開',sh:[['w',SQ]],ln:[['m',50,0,50,100]],ar:[[12,50,88,50,-.3,'m']],vb:[-4,-4,108,108]},
-  {t:'上面兩個角往中線摺',sh:[['w',SQ]],ln:[['x',50,0,50,100],['v',50,0,0,50],['v',50,0,100,50]],ar:[[4,4,44,44,-.35,'f'],[96,4,56,44,.35,'f']],vb:[-4,-4,108,108]},
-  {t:'沿著中線往後對摺',sh:[['w',[50,0,100,50,100,100,0,100,0,50]],['c',[50,0,0,50,50,50]],['c',[50,0,100,50,50,50]]],ln:[['m',50,0,50,100]],ar:[[14,80,86,80,-.3,'m']],vb:[-4,-4,108,108]},
-  {t:'前面這一層沿著虛線往下摺，做出機翼',sh:[['w',[50,0,100,50,100,100,50,100]],['c',[50,0,100,50,50,50]]],ln:[['v',50,0,70,100]],ar:[[97,62,34,74,-.3,'f']]},
-  {t:'翻到背面，另一邊也照同樣的方法往下摺',flip:1,sh:[['w',[50,0,70,100,50,100]],['c',[50,0,23.08,65.38,42.31,111.54,70,100]]]},
-  {t:'完成！把兩邊機翼打開，就可以射出去了',done:1,sh:[['c',[50,4,92,92,56,86,50,100,44,86,8,92]]],ln:[['e',50,4,50,100]],vb:[-4,-4,108,108]}
-],cr:[['m',50,0,50,100,1],['v',50,0,0,50,2],['v',50,0,100,50,2],['v',50,0,70,100,4],['m',50,0,100,10,4],['v',50,0,30,100,5],['m',50,0,0,10,5]]},
-
-{id:'teller',name:'東南西北',lv:2,frame:'s',vb:[-4,-4,108,108],steps:[
-  DIAG_CREASE(),
-  BLINTZ,
-  {t:'翻到背面',flip:1,sh:[['c',D]],ln:[['e',50,0,50,100],['e',0,50,100,50]]},
-  {t:'四個角再往中心點摺一次',sh:[['w',D]],ln:[['x',0,50,100,50],['x',50,0,50,100],['v',25,25,75,25],['v',75,25,75,75],['v',75,75,25,75],['v',25,75,25,25]],ar:[[50,4,50,44,-.22,'f'],[96,50,56,50,-.22,'f'],[50,96,50,56,-.22,'f'],[4,50,44,50,-.22,'f']]},
-  {t:'上下、左右各對摺一次壓線，再把手指伸進下面四個口袋，往中間推',sh:[['c',[25,25,75,25,75,75,25,75]]],ln:[['e',25,25,75,75],['e',75,25,25,75],['v',50,25,50,75],['v',25,50,75,50]],ar:[[6,50,21,50,0,'p'],[94,50,79,50,0,'p'],[50,6,50,21,0,'p'],[50,94,50,79,0,'p']]},
-  {t:'完成！寫上顏色和數字，就可以玩東南西北',done:1,sh:[['c',[18,18,48,18,48,48,18,48]],['c',[52,18,82,18,82,48,52,48]],['c',[18,52,48,52,48,82,18,82]],['c',[52,52,82,52,82,82,52,82]]],ln:[['e',18,18,48,48],['e',48,18,18,48],['e',52,18,82,48],['e',82,18,52,48],['e',18,52,48,82],['e',48,52,18,82],['e',52,52,82,82],['e',82,52,52,82]],vb:[12,12,76,76]}
-],cr:[['v',0,0,100,100,1],['v',100,0,0,100,1],['v',50,0,100,50,2],['v',100,50,50,100,2],['v',50,100,0,50,2],['v',0,50,50,0,2],['v',25,0,25,100,4],['v',75,0,75,100,4],['v',0,25,100,25,4],['v',0,75,100,75,4]]},
-
-{id:'heart',name:'愛心',lv:2,frame:'d',vb:[-4,-4,108,108],steps:[
-  {t:'菱形擺放，白色面朝上。上下、左右各對摺一次，壓出十字線再打開',sh:[['w',D]],ln:[['v',50,0,50,100],['v',0,50,100,50]],ar:[[50,5,50,95,-.3,'f']]},
-  {t:'上角往下摺到中心點',sh:[['w',D]],ln:[['x',50,0,50,100],['x',0,50,100,50],['v',25,25,75,25]],ar:[[50,4,50,46,-.5,'f']]},
-  {t:'下角往上摺，碰到上面的邊',sh:[['w',[25,25,75,25,100,50,50,100,0,50]],['c',[25,25,75,25,50,50]]],ln:[['x',50,50,50,100],['v',12.5,62.5,87.5,62.5]],ar:[[56,96,56,28,.3,'f']]},
-  {t:'下面左右兩邊往上摺，對齊中間的線',sh:[['w',[25,25,75,25,100,50,87.5,62.5,12.5,62.5,0,50]],['c',[25,25,75,25,50,50]],['c2',[12.5,62.5,87.5,62.5,50,25]]],ln:[['v',50,62.5,81.25,31.25],['v',50,62.5,18.75,31.25]],ar:[[93,57,62,15,.35,'f'],[7,57,38,15,-.35,'f']],vb:[-4,4,108,66]},
-  {t:'翻到背面',flip:1,sh:[['c',[25,25,75,25,81.25,31.25,50,62.5,18.75,31.25]],['c2',[81.25,31.25,62.5,12.5,50,25,50,62.5]],['c2',[18.75,31.25,37.5,12.5,50,25,50,62.5]]],vb:[10,4,80,66]},
-  {t:'四個角往後摺一點點，讓愛心圓一點',sh:[['c',HEART_A]],ln:[['e',50,25,50,62.5],['m',33.26,16.74,41.74,16.74],['m',58.26,16.74,66.74,16.74],['m',23,27,23,35.5],['m',77,27,77,35.5]],vb:[10,4,80,66]},
-  {t:'完成！',done:1,sh:[['c',HEART_B]],ln:[['e',50,25,50,62.5]],vb:[14,8,72,60]}
-],cr:[['v',50,0,50,100,1],['v',0,50,100,50,1],['v',25,25,75,25,2],['v',12.5,62.5,87.5,62.5,3]]},
-
-{id:'frog',name:'跳跳蛙',lv:3,frame:'s',pw:50,ph:100,vb:[-27,-12,104,114],steps:[
-  {t:'白色面朝上。上方兩個角各往對面斜摺，壓出叉線再打開',sh:[['w',FR]],ln:[['v',0,0,50,50],['v',50,0,0,50]],ar:[[48,3,3,47,.35,'f']]},
-  {t:'上面往後摺壓線，再把兩邊往內壓，收成一個三角形',sh:[['w',FR]],ln:[['x',0,0,50,50],['x',50,0,0,50],['m',0,25,50,25]],ar:[[-16,25,-3,25,0,'p'],[66,25,53,25,0,'p'],[25,-11,25,3,0,'p']]},
-  {t:'三角形前面的兩個角，往上摺到頂端，做出前腳',sh:[['w',[0,50,50,50,50,100,0,100]],['w2',FTRI]],ln:[['v',12.5,37.5,25,50],['v',37.5,37.5,25,50]],ar:[[2,48,23,27,-.4,'f'],[48,48,27,27,.4,'f']],vb:[-27,20,104,84]},
-  {t:'下面長方形的左右兩邊往中間摺',sh:[['w',[0,50,50,50,50,100,0,100]],['w2',FTRI],['c2',FDIA]],ln:[['v',12.5,50,12.5,100],['v',37.5,50,37.5,100]],ar:[[2,82,22,82,.5,'f'],[48,82,28,82,-.5,'f']],vb:[-27,20,104,84]},
-  {t:'下面往上摺，對齊三角形的底邊',sh:[['w2',FTRI],['c2',FDIA],['c',[12.5,50,37.5,50,37.5,100,12.5,100]]],ln:[['e',25,50,25,100],['v',12.5,75,37.5,75]],ar:[[25,97,25,53,-.45,'f']],vb:[-27,20,104,84]},
-  {t:'再往下摺回一半，做出彈簧',sh:[['w2',FTRI],['c2',FDIA],['w',[12.5,50,37.5,50,37.5,75,12.5,75]]],ln:[['v',12.5,62.5,37.5,62.5]],ar:[[25,52,25,73,.6,'f']],vb:[-15,20,80,62]},
-  {t:'翻到背面',flip:1,sh:[['w2',FTRI],['c2',FDIA],['w',[12.5,50,37.5,50,37.5,75,12.5,75]],['w2',[12.5,62.5,37.5,62.5,37.5,75,12.5,75]]],vb:[-15,20,80,62]},
-  {t:'完成！用手指壓一下青蛙屁股再滑開，青蛙就會跳',done:1,sh:[['c',[12.5,48,37.5,48,37.5,75,12.5,75]],['c',FTRI]],dots:[[19,43,2],[31,43,2]],vb:[-10,20,70,60]}
-],cr:[['v',0,0,50,50,1],['v',50,0,0,50,1],['m',0,25,50,25,2],['v',12.5,50,12.5,100,4],['v',37.5,50,37.5,100,4],['m',0,75,12.5,75,5],['v',12.5,75,37.5,75,5],['m',37.5,75,50,75,5],['v',0,87.5,12.5,87.5,6],['m',12.5,87.5,37.5,87.5,6],['v',37.5,87.5,50,87.5,6]]},
-
-{id:'box',name:'紙盒',lv:3,frame:'s',vb:[-4,-4,108,108],steps:[
-  DIAG_CREASE(),
-  BLINTZ,
-  {t:'轉成正方形擺放。上下左右四個邊都往中心摺，壓出摺線再打開',sh:[['c',BRQ]],ln:[['e',BL,BL,BH,BH],['e',BH,BL,BL,BH],['v',BL,BA,BH,BA],['v',BL,BB,BH,BB],['v',BA,BL,BA,BH],['v',BB,BL,BB,BH]],ar:[[50,17,50,47,-.45,'f']]},
-  {t:'把上下兩片三角形打開',vb:[-24,-24,148,148],sh:[['w',BHEX],['c',[BL,BL,BL,BH,50,50]],['c',[BH,BL,BH,BH,50,50]]],ln:[['x',BL,BA,BH,BA],['x',BL,BB,BH,BB],['x',BA,-3.04,BA,103.04],['x',BB,-3.04,BB,103.04],['x',BA,-3.04,BB,-3.04],['x',BA,103.04,BB,103.04]],ar:[[57,40,57,-14,.3,'f'],[57,60,57,114,-.3,'f']]},
-  {t:'左右兩邊沿摺線立起來，變成兩面牆',vb:[-24,-24,148,148],sh:[['w',BHEX],['c',[BL,BL,BL,BH,50,50]],['c',[BH,BL,BH,BH,50,50]]],ln:[['x',BL,BA,BH,BA],['x',BL,BB,BH,BB],['x',BA,-3.04,BA,103.04],['x',BB,-3.04,BB,103.04],['v',BA,BL,BA,BH],['v',BB,BL,BB,BH]],ar:[[8,50,28,50,-.7,'f'],[92,50,72,50,.7,'f']]},
-  {t:'上面這一頭沿著摺線往內收，尖角摺進盒子裡',vb:[-24,-24,148,148],sh:[['w',BHEX],['c',[BL,BL,BL,BH,50,50]],['c',[BH,BL,BH,BH,50,50]]],ln:[['x',BL,BB,BH,BB],['x',BA,BB,BA,103.04],['x',BB,BB,BB,103.04],['v',BA,BA,BB,BA],['v',BA,-3.04,BB,-3.04]],ar:[[43,-17,43,40,-.35,'f'],[12,8,27,24,0,'p'],[88,8,73,24,0,'p']]},
-  {t:'下面這一頭也用同樣的方法收進去',vb:[-24,-24,148,148],sh:[['w',[BL,BA,BH,BA,BH,BH,50,120.71,BL,BH]],['c',[BL,18,BH,18,BH,BA,BL,BA]]],ln:[['x',BA,BA,BA,103.04],['x',BB,BA,BB,103.04],['v',BA,BB,BB,BB],['v',BA,103.04,BB,103.04]],ar:[[57,117,57,60,-.35,'f'],[12,92,27,76,0,'p'],[88,92,73,76,0,'p']]},
-  {t:'完成！可以裝小東西',done:1,sh:[['c',[18,18,82,18,82,82,18,82]],['c2',[30,30,70,30,70,70,30,70]]],ln:[['e',18,18,30,30],['e',82,18,70,30],['e',82,82,70,70],['e',18,82,30,70]],vb:[12,12,76,76]}
-],cr:[['v',0,0,100,100,1],['v',100,0,0,100,1],['v',50,0,100,50,2],['v',100,50,50,100,2],['v',50,100,0,50,2],['v',0,50,50,0,2],...BOXCR]},
-
-{id:'crane',name:'紙鶴',lv:3,frame:'s',vb:[-4,-18,108,108],steps:[
-  DIAG_CREASE(),
-  {t:'翻到背面。上下、左右各對摺一次，壓出十字線再打開',flip:1,sh:[['c',SQ]],ln:[['x',0,0,100,100],['x',100,0,0,100],['v',50,0,50,100],['v',0,50,100,50]],ar:[[50,5,50,95,-.3,'f']]},
-  {t:'沿著摺線，把四個角往下收，合成一個小正方形',sh:[['c',SQ]],ln:[['x',0,0,100,100],['x',100,0,0,100],['x',50,0,50,100],['x',0,50,100,50]],ar:[[-2,50,17,50,0,'p'],[102,50,83,50,0,'p'],[44,3,44,44,-.3,'f']]},
-  {t:'前面一層的左右兩邊，往中線摺',sh:[['c',PB]],ln:[['e',50,15,50,85],['v',50,85,29.5,35.5],['v',50,85,70.5,35.5]],ar:[[14,53,43,53,.45,'f'],[86,53,57,53,-.45,'f']]},
-  {t:'上面的三角形往下摺壓線，再把剛剛摺的三個地方打開',sh:[['c',PB],['c2',[29.5,35.5,50,50.5,50,85]],['c2',[70.5,35.5,50,50.5,50,85]]],ln:[['v',29.5,35.5,70.5,35.5]],ar:[[50,17,50,45,-.55,'f']]},
-  {t:'把前面一層的下角往上拉，兩邊沿著摺線往中間收',sh:[['c',PB]],ln:[['x',50,15,50,85],['m',29.5,35.5,50,85],['m',70.5,35.5,50,85],['v',29.5,35.5,70.5,35.5]],ar:[[53,82,53,-12,-.3,'f'],[16,56,33,52,0,'p'],[84,56,67,52,0,'p']]},
-  {t:'翻到背面，另一面也照第 4～6 步做一次',flip:1,sh:[['c',PB],['c2',PETAL]],ln:[['e',50,35.5,50,85]]},
-  {t:'前後兩層的下半部，都往中線摺細',sh:[['c2',PETAL]],ln:[['e',50,35.5,50,85],['v',50,85,40.2,35.5],['v',50,85,59.8,35.5]],ar:[[31,44,46,52,.5,'f'],[69,44,54,52,-.5,'f']]},
-  {t:'兩個細尖角往左上、右上反摺，變成脖子和尾巴',sh:[['c2',[50,-14,70.5,35.5,59.8,35.5,50,85,40.2,35.5,29.5,35.5]]],ln:[['v',41,42,50,62],['v',59,42,50,62]],ar:[[46,82,10,20,-.3,'f'],[54,82,90,20,.3,'f']]},
-  {t:'左邊的尖端往下反摺，做出頭',sh:[['c',[40,48,6,4,48,38]],['c',[60,48,94,4,52,38]],['c2',[50,-14,70.5,35.5,50,46,29.5,35.5]]],ln:[['v',11,15,18,9]],ar:[[4,4,4,20,-.9,'f']]},
-  {t:'兩邊翅膀往下摺',sh:[['c',[40,48,13,12,48,38]],['c',[14,13,19,9,5,22]],['c',[60,48,94,4,52,38]],['c2',[50,-14,70.5,35.5,50,46,29.5,35.5]]],ln:[['v',29.5,35.5,70.5,35.5]],ar:[[57,-10,57,72,-.3,'f']]},
-  {t:'完成！輕輕把翅膀往兩邊拉開',done:1,sh:[['c',[34,47,50,-4,66,47]],['c',[40,52,10,14,46,45]],['c',[10,14,16,10,2,22]],['c',[60,52,95,12,54,45]],['c2',[32,50,50,42,68,50,50,58]]],vb:[0,-8,100,70]}
-],cr:[['v',0,0,100,100,1],['v',100,0,0,100,1],['m',50,0,50,100,2],['m',0,50,100,50,2]]}
-];
-const LV={1:'入門',2:'中等',3:'進階'};
-
-// ===== 新增的 19 個作品 =====
 const WB=[0,100,100,100,50,50];            // 水雷基本形（三角形）
 const WBD=[25,75,50,50,75,75,50,100];      // 前後兩角摺上去後的菱形
 const KITE_DN=[50,0,79.29,29.29,50,100,20.71,29.29], KDF1=[50,29.29,20.71,29.29,50,100], KDF2=[50,29.29,79.29,29.29,50,100];
@@ -308,174 +226,371 @@ function fanPts(){const p=[50,88];for(let a=200;a<=340;a+=20){const r=a*Math.PI/
 const FAN=fanPts();
 function fanRibs(){const out=[];for(let i=2;i<FAN.length;i+=2)out.push(['e',50,88,FAN[i],FAN[i+1]]);return out;}
 
-MODELS.push(
-{id:'fox',name:'小狐狸',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_TOP_DOWN,
-  {t:'左右兩個角往上斜摺，做出耳朵',sh:[['c',TRI_DN]],ln:[['v',15,50,28,78],['v',85,50,72,78]],ar:[[3,52,22,40,-.5,'f'],[97,52,78,40,.5,'f']]},
-  {t:'完成！幫小狐狸畫上眼睛和鼻子',done:1,sh:[['c',[15,50,85,50,72,78,50,100,28,78]],['c2',[24.7,38.5,15,50,28,78]],['c2',[75.3,38.5,85,50,72,78]]],vb:[10,32,80,72]}
-],cr:[['v',0,50,100,50,1],['v',15,50,28,78,2],['m',15,50,28,22,2],['v',85,50,72,78,2],['m',85,50,72,22,2]]},
+// ===== 摺紙模擬：紙片（facet）＋ 正反面 ＋ 層次 =====
+// facet: {pts:[x,y,...], M: 原紙座標→目前座標 的仿射（null = 不再追蹤）, up: 白色面朝上?, z: 層次, tags:[], fill: 指定顏色（關鍵影格用）}
+function aApply(M,x,y){return [M[0]*x+M[1]*y+M[4],M[2]*x+M[3]*y+M[5]];}
+function aComp(A,B){return [A[0]*B[0]+A[1]*B[2],A[0]*B[1]+A[1]*B[3],A[2]*B[0]+A[3]*B[2],A[2]*B[1]+A[3]*B[3],A[0]*B[4]+A[1]*B[5]+A[4],A[2]*B[4]+A[3]*B[5]+A[5]];}
+function aInv(M){const det=M[0]*M[3]-M[1]*M[2],a=M[3]/det,b=-M[1]/det,c=-M[2]/det,d=M[0]/det;return [a,b,c,d,-(a*M[4]+b*M[5]),-(c*M[4]+d*M[5])];}
+function aRefl(ax,ay,bx,by){const dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,a=2*ux*ux-1,b=2*ux*uy,d=2*uy*uy-1;return [a,b,b,d,ax-(a*ax+b*ay),ay-(b*ax+d*ay)];}
+function mapPts(M,p){const q=[];for(let i=0;i<p.length;i+=2){const r=aApply(M,p[i],p[i+1]);q.push(r[0],r[1]);}return q;}
+function cen(p){let x=0,y=0;const n=p.length/2;for(let i=0;i<p.length;i+=2){x+=p[i];y+=p[i+1];}return [x/n,y/n];}
+function area(p){let s=0;for(let i=0;i<p.length;i+=2){const j=(i+2)%p.length;s+=p[i]*p[j+1]-p[j]*p[i+1];}return Math.abs(s)/2;}
+function cr2(ax,ay,bx,by){return ax*by-ay*bx;}
+function clipH(pts,A,d,sign){
+  const out=[];const n=pts.length/2;
+  const sd=i=>cr2(d[0],d[1],pts[2*i]-A[0],pts[2*i+1]-A[1])*sign;
+  for(let i=0;i<n;i++){
+    const j=(i+1)%n,sa=sd(i),sb=sd(j);
+    if(sa>=-1e-9) out.push(pts[2*i],pts[2*i+1]);
+    if((sa>1e-9&&sb<-1e-9)||(sa<-1e-9&&sb>1e-9)){const t=sa/(sa-sb);out.push(pts[2*i]+(pts[2*j]-pts[2*i])*t,pts[2*i+1]+(pts[2*j+1]-pts[2*i+1])*t);}
+  }
+  return out.length>=6&&area(out)>.02?out:null;
+}
+function lineInPoly(A,d,pts){ // 回傳直線在多邊形內的參數範圍
+  let lo=Infinity,hi=-Infinity;const n=pts.length/2;
+  for(let i=0;i<n;i++){
+    const j=(i+1)%n,p=[pts[2*i],pts[2*i+1]],q=[pts[2*j],pts[2*j+1]],e=[q[0]-p[0],q[1]-p[1]];
+    const den=cr2(d[0],d[1],e[0],e[1]);
+    if(Math.abs(den)<1e-12) continue;
+    const w=[p[0]-A[0],p[1]-A[1]],t=cr2(w[0],w[1],e[0],e[1])/den,s=cr2(w[0],w[1],d[0],d[1])/den;
+    if(s>=-1e-9&&s<=1+1e-9){lo=Math.min(lo,t);hi=Math.max(hi,t);}
+  }
+  return hi-lo>1e-6?[lo,hi]:null;
+}
+function cloneState(S){return {f:S.f.map(f=>({...f,pts:f.pts.slice(),tags:f.tags.slice()})),track:S.track,pre:S.pre.slice(),up0:S.up0};}
+function initState(poly,up=true){return {f:[{pts:poly.slice(),M:[1,0,0,1,0,0],up,z:0,tags:[]}],track:true,pre:[]};}
+function bboxOf(fs){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;fs.forEach(f=>{for(let i=0;i<f.pts.length;i+=2){x0=Math.min(x0,f.pts[i]);x1=Math.max(x1,f.pts[i]);y0=Math.min(y0,f.pts[i+1]);y1=Math.max(y1,f.pts[i+1]);}});return [x0,y0,x1,y1];}
+function info(f){return {oc:f.M?cen(mapPts(aInv(f.M),f.pts)):null,cc:cen(f.pts),tags:f.tags,z:f.z,up:f.up,has:t=>f.tags.includes(t)};}
+function normZ(S){S.f.sort((a,b)=>a.z-b.z);S.f.forEach((f,i)=>f.z=i);}
 
-{id:'penguin',name:'企鵝',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  VERT_CREASE_D,
-  {t:'左右兩個角往中間摺，不要碰到中線',sh:[['w',D]],ln:[['x',50,0,50,100],['v',20,30,20,70],['v',80,30,80,70]],ar:[[3,50,37,50,-.35,'f'],[97,50,63,50,.35,'f']]},
-  {t:'下面的尖角往後摺',sh:[['w',[20,30,50,0,80,30,80,70,50,100,20,70]],['c',[20,30,20,70,40,50]],['c',[80,30,80,70,60,50]]],ln:[['m',30,80,70,80]],ar:[[57,98,57,84,.9,'m']]},
-  {t:'上面的尖角往下摺，做出嘴巴',sh:[['w',[20,30,50,0,80,30,80,70,70,80,30,80,20,70]],['c',[20,30,20,70,40,50]],['c',[80,30,80,70,60,50]]],ln:[['v',38,12,62,12]],ar:[[50,2,50,22,-.6,'f']]},
-  {t:'完成！',done:1,sh:[['w',[20,30,38,12,62,12,80,30,80,70,70,80,30,80,20,70]],['c',[20,30,20,70,40,50]],['c',[80,30,80,70,60,50]],['c',[38,12,62,12,50,24]]],dots:[[41,21,1.8],[59,21,1.8]],vb:[12,4,76,80]}
-],cr:[['v',50,0,50,100,1],['v',20,30,20,70,2],['v',80,30,80,70,2],['m',30,80,70,80,3],['v',38,12,62,12,4]]},
+// 摺一下：回傳 {moving:[{old,neu}], creases:[...]}；unfold 時不改變狀態
+function opFold(S,op,stepNo){
+  const A=[op[1],op[2]],d=[op[3]-op[1],op[4]-op[2]],P=[op[5],op[6]],dir=op[7],o=op[8]||{};
+  const side=Math.sign(cr2(d[0],d[1],P[0]-A[0],P[1]-A[1]));
+  const R=aRefl(op[1],op[2],op[3],op[4]);
+  const keep=[],mov=[],creases=[];
+  S.f.forEach(f=>{
+    if(o.sel&&!o.sel(info(f))){keep.push(f);return;}
+    const a=clipH(f.pts,A,d,side),b=clipH(f.pts,A,d,-side);
+    if(a&&b&&S.track&&f.M){
+      const r=lineInPoly(A,d,f.pts);
+      if(r){const Mi=aInv(f.M),p=aApply(Mi,A[0]+d[0]*r[0],A[1]+d[1]*r[0]),q=aApply(Mi,A[0]+d[0]*r[1],A[1]+d[1]*r[1]);
+        creases.push([((dir==='v')===(f.up===(S.up0!==false)))?'v':'m',p[0],p[1],q[0],q[1],stepNo]);}
+    }
+    if(b) keep.push(a?{...f,pts:b,tags:f.tags.slice()}:f);
+    if(a) mov.push(b?{...f,pts:a,tags:f.tags.slice()}:f);
+  });
+  if(o.unfold||!mov.length) return {keep,mov,creases,res:null};
+  const zs=S.f.map(f=>f.z),zmax=Math.max(...zs),zmin=Math.min(...zs);
+  const mz=mov.map(f=>f.z),mmax=Math.max(...mz),mmin=Math.min(...mz);
+  let base=null;
+  if(o.under){const t=keep.filter(f=>f.tags.includes(o.under)).map(f=>f.z);if(t.length)base=Math.min(...t);}
+  const neu=mov.map(f=>{
+    let z;
+    if(base!==null) z=base-.5+(mmax-f.z)*.001;
+    else if(dir==='v') z=zmax+1+(mmax-f.z);
+    else z=zmin-1-(f.z-mmin);
+    return {...f,pts:mapPts(R,f.pts),M:f.M?aComp(R,f.M):null,up:!f.up,z,tags:o.tag?[...f.tags,o.tag]:f.tags.slice(),fill:f.fill?(f.back||swapFill(f.fill)):null,back:f.fill||null};
+  });
+  return {keep,mov,neu,creases};
+}
+function opFlip(S){const b=bboxOf(S.f),cx=(b[0]+b[2])/2,F=[-1,0,0,1,2*cx,0];
+  S.f.forEach(f=>{f.pts=mapPts(F,f.pts);if(f.M)f.M=aComp(F,f.M);f.up=!f.up;f.z=-f.z;if(f.fill){const b=f.back||swapFill(f.fill);f.back=f.fill;f.fill=b;}});normZ(S);return cx;}
+function swapFill(f){return {w:'c',c:'w',w2:'c2',c2:'w2'}[f]||f;}
+function opRot(S,deg){const b=bboxOf(S.f),cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2,r=deg*Math.PI/180,c=Math.cos(r),s=Math.sin(r);
+  const M=[c,-s,s,c,cx-c*cx+s*cy,cy-s*cx-c*cy];S.f.forEach(f=>{f.pts=mapPts(M,f.pts);if(f.M)f.M=aComp(M,f.M);});return {cx,cy};}
+function opKey(S,shapes){S.f=shapes.map(([fill,pts,tag,back],i)=>({pts:pts.slice(),M:null,up:fill[0]==='w',z:i,tags:tag?[tag]:[],fill,back:back||swapFill(fill)}));S.track=false;S.pre=[];}
+function applyOp(S,op,stepNo,log){
+  if(op[0]==='f'){const r=opFold(S,op,stepNo);if(log)log.push(...r.creases);
+    if(op[8]&&op[8].unfold){if(S.track)r.creases.forEach(c=>S.pre.push(c));return r;}
+    if(r.neu){S.f=[...r.keep,...r.neu];normZ(S);}return r;}
+  if(op[0]==='flip') return opFlip(S);
+  if(op[0]==='rot') return opRot(S,op[1]);
+  if(op[0]==='key') return opKey(S,op[1]);
+}
+function stateShapes(S){return S.f.slice().sort((a,b)=>a.z-b.z).map(f=>[f.fill||(f.up?'w':'c'),f.pts]);}
+function inPolyP(x,y,p){let c=false;for(let i=0,j=p.length-2;i<p.length;j=i,i+=2){const xi=p[i],yi=p[i+1],xj=p[j],yj=p[j+1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}return c;}
+function preLines(S,only){ // 先前壓好的摺痕（虛的灰線），只畫在最上面看得到的紙上
+  if(!S.track) return [];
+  const out=[];const fs=only||S.f;
+  fs.forEach(f=>{if(!f.M)return;const Mi=aInv(f.M),op=mapPts(Mi,f.pts);
+    S.pre.forEach(c=>{const A=[c[1],c[2]],d=[c[3]-c[1],c[4]-c[2]],r=lineInPoly(A,d,op);if(!r)return;
+      const lo=Math.max(0,r[0]),hi=Math.min(1,r[1]);if(hi-lo<1e-3)return;
+      const p=aApply(f.M,A[0]+d[0]*lo,A[1]+d[1]*lo),q=aApply(f.M,A[0]+d[0]*hi,A[1]+d[1]*hi),mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2;
+      if(fs.some(g=>g!==f&&g.z>f.z&&inPolyP(mx,my,g.pts)))return;
+      out.push(['x',p[0],p[1],q[0],q[1]]);});});
+  return out;
+}
 
-{id:'bookmark',name:'書籤',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_BOTTOM_UP,
-  {t:'前面這一層的尖角往下摺，碰到底邊',sh:[['c',TRI_UP]],ln:[['v',25,25,75,25]],ar:[[50,4,50,46,-.5,'f']]},
-  {t:'左右兩個角往上摺到頂端，壓出摺線',sh:[['w',[25,25,75,25,50,0]],['c',[0,50,100,50,75,25,25,25]],['w',[25,25,75,25,50,50]]],ln:[['v',25,25,50,50],['v',75,25,50,50]],ar:[[3,48,46,4,-.35,'f'],[97,48,54,4,.35,'f']]},
-  {t:'把兩個角打開，再塞進前面那一層的口袋裡',sh:[['w',[25,25,75,25,50,0]],['c',[0,50,100,50,75,25,25,25]],['w',[25,25,75,25,50,50]]],ln:[['x',25,25,50,50],['x',75,25,50,50]],ar:[[4,47,34,38,-.3,'f'],[96,47,66,38,.3,'f']]},
-  {t:'完成！套在書頁的角上，就是書籤',done:1,sh:[['w',[25,25,50,0,75,25]],['c',[25,25,75,25,50,50]]],vb:[16,-4,68,58]}
-],cr:[['v',0,50,100,50,1],['m',25,75,75,75,2],['v',25,25,50,50,3],['m',25,75,50,50,3],['v',75,25,50,50,3],['m',75,75,50,50,3]]},
+// ---- 把作品的 ops 編譯成「每一步的圖」+ 摺線紙
+function compileModel(m){
+  if(m._c) return;
+  let S=initState(m.paper,m.up0!==false);
+  const steps=[],creases=[],states=[];
+  m.raw.forEach((st,k)=>{
+    const ops=st.ops||[];
+    // 開頭的翻面／旋轉先套用在圖上
+    let lead=0;S.up0=m.up0;const S0=cloneState(S);
+    while(lead<ops.length&&(ops[lead][0]==='flip'||ops[lead][0]==='rot')){applyOp(S0,ops[lead],k+1);lead++;}
+    const disp={t:st.t,sh:stateShapes(S0),ln:[...preLines(S0)],ar:[],flip:ops[0]&&ops[0][0]==='flip'?1:0,done:st.done?1:0,dots:st.dots||null};
+    if(st.done&&st.final){disp.sh=st.final;}
+    if(st.ln) disp.ln.push(...st.ln);
+    // 依序模擬，收集摺線與箭頭
+    const Sx=cloneState(S0);let keyLn=null;
+    for(let i=lead;i<ops.length;i++){
+      const op=ops[i];
+      if(op[0]==='f'){
+        const pre=cloneState(Sx);const r=applyOp(Sx,op,k+1,creases);
+        const A=[op[1],op[2]],d=[op[3]-op[1],op[4]-op[2]];let lo=Infinity,hi=-Infinity;
+        (r.mov||[]).concat(r.keep||[]).forEach(f=>{const q=lineInPoly(A,d,f.pts);if(q&&(r.mov.includes(f)||clipH(f.pts,A,d,1)&&clipH(f.pts,A,d,-1))){lo=Math.min(lo,q[0]);hi=Math.max(hi,q[1]);}});
+        (r.mov||[]).forEach(f=>{const q=lineInPoly(A,d,f.pts);if(q){lo=Math.min(lo,q[0]);hi=Math.max(hi,q[1]);}});
+        if(isFinite(lo)) disp.ln.push([op[7],A[0]+d[0]*lo,A[1]+d[1]*lo,A[0]+d[0]*hi,A[1]+d[1]*hi]);
+        // 箭頭：從要動的紙片尖端到摺過去的位置
+        if(r.mov&&r.mov.length&&!(op[8]&&op[8].noArrow)){
+          const R=aRefl(op[1],op[2],op[3],op[4]);
+          const L0=Math.hypot(d[0],d[1]),nn=[-d[1]/L0,d[0]/L0];let P=[op[5],op[6]],best=-1;
+          r.mov.forEach(f=>{for(let j=0;j<f.pts.length;j+=2){const sd=Math.abs((f.pts[j]-A[0])*nn[0]+(f.pts[j+1]-A[1])*nn[1]);if(sd>best+1e-6){best=sd;P=[f.pts[j],f.pts[j+1]];}}});
+          {const sd=(P[0]-A[0])*nn[0]+(P[1]-A[1])*nn[1];P=[P[0]-nn[0]*sd*.12,P[1]-nn[1]*sd*.12];}
+          const Q=aApply(R,P[0],P[1]);
+          const b=bboxOf(pre.f),C=[(b[0]+b[2])/2,(b[1]+b[3])/2];
+          const mx=(P[0]+Q[0])/2,my=(P[1]+Q[1])/2,dx=Q[0]-P[0],dy=Q[1]-P[1];
+          const bend=.3,c1=[mx-dy*bend,my+dx*bend],c2=[mx+dy*bend,my-dx*bend];
+          const s=Math.hypot(c1[0]-C[0],c1[1]-C[1])>Math.hypot(c2[0]-C[0],c2[1]-C[1])?bend:-bend;
+          const P2=P,Q2=[Q[0]-dx*.06,Q[1]-dy*.06];
+          disp.ar.push([P2[0],P2[1],Q2[0],Q2[1],s,op[7]==='m'?'m':'f']);
+        }
+      }else if(op[0]==='key'){
+        if(op[2]){if(op[2].ln)disp.ln.push(...op[2].ln);if(op[2].ar)disp.ar.push(...op[2].ar);}
+        applyOp(Sx,op,k+1);
+      }else applyOp(Sx,op,k+1);
+    }
+    states.push(cloneState(S));
+    steps.push({disp,ops,lead,after:cloneState(Sx)});
+    S=Sx;
+  });
+  // 視窗範圍
+  steps.forEach((s,k)=>{
+    const pts=[];s.disp.sh.forEach(([f,p])=>pts.push(...p));
+    if(!s.disp.done) stateShapes(s.after).forEach(([f,p])=>pts.push(...p));
+    s.disp.ar.forEach(a=>pts.push(a[0],a[1],a[2],a[3],(a[0]+a[2])/2-(a[3]-a[1])*a[4],(a[1]+a[3])/2+(a[2]-a[0])*a[4]));
+    s.disp.ln.forEach(l=>pts.push(l[1],l[2],l[3],l[4]));
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(let i=0;i<pts.length;i+=2){x0=Math.min(x0,pts[i]);x1=Math.max(x1,pts[i]);y0=Math.min(y0,pts[i+1]);y1=Math.max(y1,pts[i+1]);}
+    const w=x1-x0,h=y1-y0,sz=Math.max(w,h,20)*1.1,cx=(x0+x1)/2,cy=(y0+y1)/2;
+    s.disp.vb=[cx-sz/2,cy-sz/2,sz,sz];
+  });
+  m.steps=steps.map(s=>s.disp);
+  m.sim=steps;m.states=states;
+  const cr=[];creases.forEach(c=>{if(Math.hypot(c[3]-c[1],c[4]-c[2])<.5)return;
+    if(cr.some(e=>(Math.hypot(e[1]-c[1],e[2]-c[2])<.3&&Math.hypot(e[3]-c[3],e[4]-c[4])<.3)||(Math.hypot(e[1]-c[3],e[2]-c[4])<.3&&Math.hypot(e[3]-c[1],e[4]-c[2])<.3)))return;cr.push(c);});
+  (m.extraCr||[]).forEach(c=>cr.push(c));
+  m.cr=cr;
+  m.vb=m.steps[0].vb;
+  m._c=1;
+}
 
-{id:'envelope',name:'信封',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  {t:'菱形擺放，白色面朝上。左邊的角往中心點摺',sh:[['w',D]],ln:[['v',25,25,25,75]],ar:[[3,50,47,50,-.35,'f']]},
-  {t:'右邊的角也往中心點摺',sh:[['w',[25,25,50,0,100,50,50,100,25,75]],['c',[25,25,50,50,25,75]]],ln:[['v',75,25,75,75]],ar:[[97,50,53,50,.35,'f']]},
-  {t:'下面的尖角往上摺，超過中心一點',sh:[['w',[25,25,50,0,75,25,75,75,50,100,25,75]],['c',[25,25,50,50,25,75]],['c',[75,25,50,50,75,75]]],ln:[['v',25,70,75,70]],ar:[[57,97,57,43,-.4,'f']]},
-  {t:'上面的尖角往下摺，蓋住開口',sh:[['w',[25,25,50,0,75,25,75,70,25,70]],['c',[25,25,50,50,30,70,25,70]],['c',[75,25,50,50,70,70,75,70]],['c2',[25,70,75,70,75,65,50,40,25,65]]],ln:[['v',25,30,75,30]],ar:[[57,3,57,57,.4,'f']]},
-  {t:'完成！寫上祝福，放進小卡片',done:1,sh:[['w',[25,30,75,30,75,70,25,70]],['c',[25,30,30,30,50,50,30,70,25,70]],['c',[75,30,70,30,50,50,70,70,75,70]],['c2',[25,70,75,70,75,65,50,40,25,65]],['c2',[25,30,75,30,50,60]]],vb:[18,22,64,56]}
-],cr:[['v',25,25,25,75,1],['v',75,25,75,75,2],['v',25,70,75,70,3],['m',20,70,25,70,3],['m',75,70,80,70,3],['v',25,30,75,30,4],['m',20,30,25,30,4],['m',75,30,80,30,4]]},
+// ===== 30 個作品：用「摺法」描述，圖和動畫都由模擬產生 =====
+// ['f', 線起點x,y, 線終點x,y, 要動那一側的一點x,y, 'v'往自己摺|'m'往後摺, {sel,unfold,tag,under}]
+const U={unfold:1};
+const flap=i=>i.oc&&Math.abs(i.oc[0]-50)>Math.abs(i.oc[1]-50);
+const TOPDOWN={t:'菱形擺放，白色面朝上。上角往下對摺，變成三角形',ops:[['f',0,50,100,50,50,5,'v']]};
+const BOTUP={t:'菱形擺放，白色面朝上。下角往上對摺，變成三角形',ops:[['f',0,50,100,50,50,95,'v']]};
+const DIAGC={t:'白色面朝上。兩條對角線各對摺一次，壓出叉線再打開',ops:[['f',0,0,100,100,92,8,'v',U],['f',100,0,0,100,8,8,'v',U]]};
+const BLZ={t:'四個角都往中心點摺',ops:[['f',50,0,0,50,3,3,'v'],['f',50,0,100,50,97,3,'v'],['f',100,50,50,100,97,97,'v'],['f',50,100,0,50,3,97,'v']]};
+const VCR={t:'菱形擺放，白色面朝上。左右對摺壓出中線，再打開',ops:[['f',50,0,50,100,5,50,'v',U]]};
+const UPK={t:'上面左右兩邊往中線摺',ops:[['f',50,0,20.71,70.71,3,48,'v'],['f',50,0,79.29,70.71,97,48,'v']]};
+const LOK={t:'下面左右兩邊往中線摺',ops:[['f',50,100,20.71,29.29,3,52,'v'],['f',50,100,79.29,29.29,97,52,'v']]};
+const FOURIN=(tag)=>({t:'四個角再往中心點摺一次',ops:[['f',25,25,75,25,50,3,'v',{tag:tag&&'T'}],['f',75,25,75,75,97,50,'v',{tag:tag&&'R'}],['f',75,75,25,75,50,97,'v',{tag:tag&&'B'}],['f',25,75,25,25,3,50,'v',{tag:tag&&'L'}]]});
+const WBKEY=[['w',[0,100,50,100,50,50],'b'],['w',[50,100,100,100,50,50],'b'],['c',[0,100,50,100,50,50],'f'],['c',[50,100,100,100,50,50],'f']];
+const WBSTEPS=[DIAGC,
+  {t:'翻到背面。上下對摺壓線，再打開',ops:[['flip'],['f',0,50,100,50,50,4,'v',U]]},
+  {t:'沿著摺線，左右兩邊往內壓，上半部往下收成三角形',ops:[['key',WBKEY,{ar:[[-3,50,16,50,0,'p'],[103,50,84,50,0,'p'],[36,4,36,46,-.3,'f']]}]]},
+  {t:'前面兩個角往上摺到頂端',ops:[['f',25,75,50,100,3,98,'v',{sel:i=>i.has('f')}],['f',75,75,50,100,97,98,'v',{sel:i=>i.has('f')}]]}];
+const hasT=t=>i=>i.has(t);
 
-{id:'icecream',name:'冰淇淋',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  VERT_CREASE_D,
-  LOWER_KITE,
-  {t:'上面的尖角往下摺一點點',sh:[['w',KITE_DN],['c',KDF1],['c',KDF2]],ln:[['v',35.35,14.65,64.65,14.65]],ar:[[50,2,50,26,-.6,'f']]},
-  {t:'左右兩個角往後摺，讓冰淇淋圓一點',sh:[['w',[35.35,14.65,64.65,14.65,79.29,29.29,50,100,20.71,29.29]],['c',KDF1],['c',KDF2],['c',[35.35,14.65,64.65,14.65,50,29.29]]],ln:[['m',25.66,24.34,23.39,35.76],['m',74.34,24.34,76.61,35.76]]},
-  {t:'完成！畫上冰淇淋的花紋',done:1,sh:[['w',[35.35,14.65,64.65,14.65,74.34,24.34,76.61,35.76,50,100,23.39,35.76,25.66,24.34]],['c',[50,29.29,24.68,29.29,23.39,35.76,50,100]],['c',[50,29.29,75.32,29.29,76.61,35.76,50,100]],['c',[35.35,14.65,64.65,14.65,50,29.29]]],vb:[12,8,76,96]}
-],cr:[['v',50,0,50,100,1],['v',50,100,20.71,29.29,2],['v',50,100,79.29,29.29,2],['v',35.35,14.65,64.65,14.65,3],['m',25.66,24.34,23.39,35.76,4],['m',74.34,24.34,76.61,35.76,4]]},
-
-{id:'sailboat',name:'帆船',lv:1,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_BOTTOM_UP,
-  {t:'前面這一層的尖角往下摺，塞進兩層中間',sh:[['c',TRI_UP]],ln:[['v',25,25,75,25]],ar:[[50,4,50,40,-.5,'f']]},
-  {t:'左右兩個下角往後摺，做出船身',sh:[['w',[25,25,75,25,50,0]],['c',[0,50,100,50,75,25,25,25]]],ln:[['m',10,40,25,50],['m',90,40,75,50]],ar:[[4,52,14,40,.8,'m'],[96,52,86,40,-.8,'m']]},
-  {t:'完成！',done:1,sh:[['w',[25,25,75,25,50,0]],['c',[10,40,25,50,75,50,90,40,75,25,25,25]]],vb:[4,-4,92,58]}
-],cr:[['v',0,50,100,50,1],['v',25,75,75,75,2],['m',10,40,25,50,3],['v',10,60,25,50,3],['m',90,40,75,50,3],['v',90,60,75,50,3]]},
-
-{id:'hat',name:'紙帽子',lv:1,frame:'s',pw:HW,ph:100,vb:[-8,-4,86.71,108],steps:[
-  {t:'用長方形的紙（A4 大小），白色面朝上。上往下對摺',sh:[['w',[0,0,HW,0,HW,100,0,100]]],ln:[['v',0,50,HW,50]],ar:[[55,4,55,96,-.25,'f']]},
-  {t:'左右對摺壓出中線，再打開',sh:[['c',[0,50,HW,50,HW,100,0,100]]],ln:[['v',HC,50,HC,100]],ar:[[4,75,66,75,-.3,'f']],vb:[-8,40,86.71,66]},
-  {t:'上面兩個角往下摺，對齊中線',sh:[['c',[0,50,HW,50,HW,100,0,100]]],ln:[['x',HC,50,HC,100],['v',HC,50,0,85.35],['v',HC,50,HW,85.35]],ar:[[3,53,31,82,.4,'f'],[HW-3,53,HW-31,82,-.4,'f']],vb:[-8,40,86.71,66]},
-  {t:'下面前面這一層往上摺',sh:[['c',[0,85.35,HC,50,HW,85.35,HW,100,0,100]],['c2',[HC,85.35,HC,50,0,85.35]],['c2',[HC,85.35,HC,50,HW,85.35]]],ln:[['v',0,85.35,HW,85.35]],ar:[[HC+10,99,HC+10,74,-.5,'f']],vb:[-8,40,86.71,66]},
-  {t:'後面那一層往後摺上去',sh:[['c',[0,85.35,HC,50,HW,85.35,HW,100,0,100]],['c2',[HC,85.35,HC,50,0,85.35]],['c2',[HC,85.35,HC,50,HW,85.35]],['w',[0,70.7,HW,70.7,HW,85.35,0,85.35]]],ln:[['m',0,85.35,HW,85.35]],ar:[[HC+14,98,HC+14,88,.9,'m']],vb:[-8,40,86.71,66]},
-  {t:'完成！打開下面就能戴',done:1,sh:[['c',[0,85.35,HC,50,HW,85.35]],['c2',[HC,85.35,HC,50,0,85.35]],['c2',[HC,85.35,HC,50,HW,85.35]],['w',[0,70.7,HW,70.7,HW,85.35,0,85.35]]],vb:[-6,44,82.71,46]}
-],cr:[['v',0,50,HW,50,1],['v',HC,50,HC,100,2],['m',HC,0,HC,50,2],['v',HC,50,0,85.35,3],['v',HC,50,HW,85.35,3],['m',HC,50,0,14.65,3],['m',HC,50,HW,14.65,3],['m',0,14.65,HW,14.65,4],['m',0,85.35,HW,85.35,5]]},
-
-{id:'cicada',name:'蟬',lv:2,frame:'d',vb:[-4,-4,108,108],steps:[
-  STEP1_BOTTOM_UP,
-  {t:'左右兩個角往上摺到頂端',sh:[['c',TRI_UP]],ln:[['v',25,25,50,50],['v',75,25,50,50]],ar:[[3,48,46,4,-.35,'f'],[97,48,54,4,.35,'f']]},
-  {t:'兩個尖角往外斜摺下來，做出翅膀',sh:[['c',[25,25,50,0,75,25,50,50]],['c2',[50,0,25,25,50,50]],['c2',[50,0,75,25,50,50]]],ln:[['v',25,25,50,30],['v',75,25,50,30]],ar:[[48,3,36,56,.35,'f'],[52,3,64,56,-.35,'f']],vb:[14,-4,72,66]},
-  {t:'上面前面這一層往下摺',sh:[['c',[25,25,50,0,75,25,50,50]],['c2',[25,25,50,30,50,50]],['c2',[75,25,50,30,50,50]],['c2',[38.5,57.7,25,25,50,30]],['c2',[61.5,57.7,75,25,50,30]]],ln:[['v',38,12,62,12]],ar:[[50,1,50,22,-.6,'f']],vb:[14,-4,72,66]},
-  {t:'下一層也往下摺，比上一層高一點',sh:[['c',[25,25,50,0,75,25,50,50]],['c2',[25,25,50,30,50,50]],['c2',[75,25,50,30,50,50]],['c2',[38.5,57.7,25,25,50,30]],['c2',[61.5,57.7,75,25,50,30]],['w',[38,12,62,12,50,24]]],ln:[['v',44,6,56,6]],ar:[[50,0,50,11,-.9,'f']],vb:[14,-4,72,66]},
-  {t:'翻到背面，左右兩邊往後摺一點，讓身體變窄',flip:1,sh:[['c',[25,25,44,6,56,6,75,25,50,50]],['c2',[38.5,57.7,25,25,50,30]],['c2',[61.5,57.7,75,25,50,30]]],ln:[['m',35,15,40,45],['m',65,15,60,45]],vb:[14,-4,72,66]},
-  {t:'完成！',done:1,sh:[['c2',[38.5,57.7,25,25,50,30]],['c2',[61.5,57.7,75,25,50,30]],['c',[44,6,56,6,65,15,60,45,50,50,40,45,35,15]],['w',[40,12,60,12,50,24]],['c',[44,6,56,6,50,12]]],dots:[[42,16,1.4],[58,16,1.4]],vb:[18,0,64,62]}
-],cr:[['v',0,50,100,50,1],['v',25,25,50,50,2],['m',25,75,50,50,2],['v',75,25,50,50,2],['m',75,75,50,50,2]]},
-
-{id:'tree',name:'聖誕樹',lv:2,frame:'d',vb:[-4,-4,108,108],steps:[
-  VERT_CREASE_D,
-  UPPER_KITE,
-  {t:'下面的尖角往上摺',sh:[['w',KITE_UP],['c',KUF1],['c',KUF2]],ln:[['v',28.71,78,71.29,78]],ar:[[56,98,56,58,.45,'f']]},
-  {t:'再往下摺回一點，做出樹幹',sh:[['w',[50,0,79.29,70.71,71.29,78,28.71,78,20.71,70.71]],['c',KUF1],['c',KUF2],['c2',[28.71,78,71.29,78,50,56]]],ln:[['v',36.71,70,63.29,70]],ar:[[53,58,53,82,-.6,'f']]},
-  {t:'翻到背面',flip:1,sh:[['w',[50,0,79.29,70.71,71.29,78,56,78,50,84,44,78,28.71,78,20.71,70.71]],['c',KUF1],['c',KUF2],['c2',[28.71,78,36.71,70,63.29,70,71.29,78]],['w',[36.71,70,63.29,70,50,84]]]},
-  {t:'完成！畫上彩球和星星',done:1,sh:[['c',[50,0,79.29,70.71,71.29,78,28.71,78,20.71,70.71]],['c2',[44,78,56,78,50,84]]],vb:[14,-4,72,92]}
-],cr:[['v',50,0,50,100,1],['v',50,0,20.71,70.71,2],['v',50,0,79.29,70.71,2],['v',28.71,78,71.29,78,3],['m',36.71,86,63.29,86,4]]},
-
-{id:'frame',name:'相框',lv:2,frame:'s',vb:[-4,-4,108,108],steps:[
-  DIAG_CREASE(),
-  BLINTZ,
-  {t:'翻到背面',flip:1,sh:[['c',D]],ln:[['e',50,0,50,100],['e',0,50,100,50]]},
-  FOUR_IN([['w',D]],.22),
-  {t:'中間的四個尖角，往外摺到邊上',sh:[['c',[25,25,75,25,75,75,25,75]]],ln:[['e',25,25,75,75],['e',75,25,25,75],['v',37.5,37.5,62.5,37.5],['v',62.5,37.5,62.5,62.5],['v',62.5,62.5,37.5,62.5],['v',37.5,62.5,37.5,37.5]],ar:[[50,46,50,28,0,'f'],[54,50,72,50,0,'f'],[50,54,50,72,0,'f'],[46,50,28,50,0,'f']],vb:[18,18,64,64]},
-  {t:'完成！中間貼上照片或畫畫',done:1,sh:[['c',[25,25,75,25,75,75,25,75]],['w2',[37.5,37.5,62.5,37.5,62.5,62.5,37.5,62.5]],['w',[37.5,37.5,62.5,37.5,50,25]],['w',[62.5,37.5,62.5,62.5,75,50]],['w',[62.5,62.5,37.5,62.5,50,75]],['w',[37.5,62.5,37.5,37.5,25,50]]],ln:[['e',25,25,37.5,37.5],['e',75,25,62.5,37.5],['e',75,75,62.5,62.5],['e',25,75,37.5,62.5]],vb:[18,18,64,64]}
-],cr:[['v',0,0,100,100,1],['v',100,0,0,100,1],['v',50,0,100,50,2],['v',100,50,50,100,2],['v',50,100,0,50,2],['v',0,50,50,0,2],['v',25,0,25,100,4],['v',75,0,75,100,4],['v',0,25,100,25,4],['v',0,75,100,75,4]]},
-
-{id:'fan',name:'紙扇',lv:2,frame:'s',vb:[-4,-12,108,124],steps:[
-  CROSS_CREASE('白色面朝上。上下對摺壓線，再打開'),
-  {t:'上下兩邊往中線摺，壓線再打開',sh:[['w',SQ]],ln:[['x',0,50,100,50],['v',0,25,100,25],['v',0,75,100,75]],ar:[[72,4,72,46,-.4,'f'],[72,96,72,54,.4,'f']]},
-  {t:'每一格再對摺一次，壓出 8 格摺線',sh:[['w',SQ]],ln:[['x',0,25,100,25],['x',0,50,100,50],['x',0,75,100,75],['v',0,12.5,100,12.5],['v',0,37.5,100,37.5],['v',0,62.5,100,62.5],['v',0,87.5,100,87.5]]},
-  {t:'照著摺線，一正一反來回摺成長條',sh:[['w',SQ]],ln:[['v',0,12.5,100,12.5],['m',0,25,100,25],['v',0,37.5,100,37.5],['m',0,50,100,50],['v',0,62.5,100,62.5],['m',0,75,100,75],['v',0,87.5,100,87.5]],ar:[[50,-10,50,3,0,'p'],[50,110,50,97,0,'p']]},
-  {t:'長條對摺，下面用膠帶黏緊',sh:[['c',[0,44,100,44,100,56.5,0,56.5]]],ln:[['e',0,47,100,47],['e',0,50.2,100,50.2],['e',0,53.4,100,53.4],['v',50,44,50,56.5]],ar:[[96,40,55,40,.45,'f']]},
-  {t:'完成！打開就是一把扇子',done:1,sh:[['c',FAN]],ln:fanRibs(),vb:[0,36,100,58]}
-],cr:[['v',0,50,100,50,1],['v',0,25,100,25,2],['v',0,75,100,75,2],['v',0,12.5,100,12.5,3],['v',0,37.5,100,37.5,3],['v',0,62.5,100,62.5,3],['v',0,87.5,100,87.5,3]]},
-
-{id:'butterfly',name:'蝴蝶',lv:2,frame:'s',vb:[-4,-4,108,108],steps:[
-  DIAG_CREASE(), WB_S2, WB_S3, WB_S4,
-  {t:'翻到背面，上面尖角往下摺，超過底邊一點',flip:1,sh:[['c',WB]],ln:[['v',30,80,70,80]],ar:[[57,52,57,106,-.35,'f']],vb:[-4,44,108,72]},
-  {t:'完成！沿中線輕輕往後彎，翅膀就會立起來',done:1,sh:[['c2',WBD],['c',[0,100,100,100,70,80,30,80]],['c2',[30,80,70,80,50,110]]],ln:[['e',50,80,50,110]],vb:[-4,44,108,72]}
-],cr:[['v',0,0,100,100,1],['v',100,0,0,100,1],['m',0,50,100,50,2]]},
-
-{id:'house',name:'房子',lv:2,frame:'s',vb:[-4,-4,108,108],steps:[
-  {t:'白色面朝上。上往下對摺',sh:[['w',SQ]],ln:[['v',0,50,100,50]],ar:[[75,4,75,96,-.25,'f']]},
-  {t:'左右對摺壓出中線，再打開',sh:[['c',[0,50,100,50,100,100,0,100]]],ln:[['v',50,50,50,100]],ar:[[4,76,96,76,-.3,'f']],vb:[-4,40,108,66]},
-  {t:'左右兩邊往中線摺',sh:[['c',[0,50,100,50,100,100,0,100]]],ln:[['x',50,50,50,100],['v',25,50,25,100],['v',75,50,75,100]],ar:[[3,62,47,62,-.4,'f'],[97,62,53,62,.4,'f']],vb:[-4,40,108,66]},
-  {t:'把上面兩個角撐開，往外壓扁，變成屋頂',sh:[['c2',[25,50,50,50,50,100,25,100]],['c2',[50,50,75,50,75,100,50,100]]],ln:[['v',25,50,50,75],['v',75,50,50,75]],ar:[[44,56,6,72,.35,'f'],[56,56,94,72,-.35,'f']],vb:[-4,40,108,66]},
-  {t:'完成！畫上門和窗戶',done:1,sh:[['c',[25,50,75,50,50,75]],['c',[25,75,75,75,75,100,25,100]],['c2',[0,75,25,50,50,75]],['c2',[50,75,75,50,100,75]]],ln:[['e',50,75,50,100]],vb:[-4,44,108,60]}
-],cr:[['v',0,50,100,50,1],['v',50,50,50,100,2],['m',50,0,50,50,2],['v',25,50,25,100,3],['m',25,0,25,50,3],['v',75,50,75,100,3],['m',75,0,75,50,3]]},
-
-{id:'bird',name:'小鳥',lv:2,frame:'d',vb:[-4,-4,108,108],steps:[
-  VERT_CREASE_D,
-  LOWER_KITE,
-  {t:'上面的尖角往下摺',sh:[['w',KITE_DN],['c',KDF1],['c',KDF2]],ln:[['v',20.71,29.29,79.29,29.29]],ar:[[50,3,50,55,-.4,'f']]},
-  {t:'沿中線往後對摺',sh:[['w',[20.71,29.29,79.29,29.29,50,100]],['c',KDF1],['c',KDF2],['c2',[20.71,29.29,79.29,29.29,50,58.58]]],ln:[['m',50,29.29,50,100]],ar:[[25,40,75,40,-.35,'m']]},
-  {t:'把尖尖的那一端往上拉，做成脖子和頭',sh:[['c',[50,29.29,79.29,29.29,50,100]],['c2',[50,29.29,79.29,29.29,50,58.58]]],ln:[['v',50,72,64,62]],ar:[[53,96,90,12,.3,'f']]},
-  {t:'完成！',done:1,sh:[['c',[12,50,72,56,42,82]],['c',[58,57,76,14,68,57]],['c',[76,14,90,22,74,24]],['c2',[30,58,62,58,40,74]]],dots:[[78,18,1.2]],vb:[5,5,90,82]}
-],cr:[['v',50,0,50,100,1],['v',50,100,20.71,29.29,2],['v',50,100,79.29,29.29,2],['v',20.71,29.29,79.29,29.29,3]]},
-
-{id:'stem',name:'花莖與葉子',lv:2,frame:'d',vb:[-4,-4,108,108],steps:[
-  VERT_CREASE_D,
-  UPPER_KITE,
-  {t:'下面左右兩邊也往中線摺，變得更細',sh:[['w',KITE_UP],['c',KUF1],['c',KUF2]],ln:[['v',50,100,29.29,50],['v',50,100,70.71,50]],ar:[[22,72,46,78,-.4,'f'],[78,72,54,78,.4,'f']]},
-  {t:'下半部往上對摺',sh:[['c',[50,0,70.71,50,50,100,29.29,50]]],ln:[['e',50,0,50,100],['v',29.29,50,70.71,50]],ar:[[55,97,55,4,-.3,'f']]},
-  {t:'沿中線往後對摺',sh:[['c',[29.29,50,70.71,50,50,0]]],ln:[['m',50,0,50,50]],ar:[[34,40,66,40,-.4,'m']],vb:[20,-6,62,62]},
-  {t:'把裡面那一層往外拉出來，變成葉子',sh:[['c',[50,50,70.71,50,50,0]]],ar:[[58,30,78,10,0,'p']],vb:[20,-6,62,62]},
-  {t:'完成！可以和鬱金香放在一起',done:1,sh:[['c2',[48,6,52,6,53,98,47,98]],['c',[52,72,86,28,57,82]]],vb:[20,0,80,102]}
-],cr:[['v',50,0,50,100,1],['v',50,0,20.71,70.71,2],['v',50,0,79.29,70.71,2]]},
-
-{id:'balloon',name:'氣球',lv:3,frame:'s',vb:[-4,-4,108,108],steps:[
-  DIAG_CREASE(), WB_S2, WB_S3, WB_S4,
-  {t:'翻到背面，另一面也一樣摺',flip:1,sh:[['c',WB],['c2',WBD]],vb:[-4,44,108,62]},
-  {t:'前面這一層，左右兩個角往中線摺',sh:[['c2',WBD]],ln:[['e',50,50,50,100],['v',37.5,62.5,37.5,87.5],['v',62.5,62.5,62.5,87.5]],ar:[[26,79,46,79,-.5,'f'],[74,79,54,79,.5,'f']],vb:[20,44,60,62]},
-  {t:'上面兩個小三角形往下摺，塞進旁邊的口袋',sh:[['c2',BAL6],['c',[37.5,62.5,50,75,37.5,87.5]],['c',[62.5,62.5,50,75,62.5,87.5]]],ln:[['v',41,59,50,68],['v',59,59,50,68]],ar:[[44,53,43,70,-.5,'f'],[56,53,57,70,.5,'f']],vb:[20,44,60,62]},
-  {t:'翻到背面，另一面也做第 6、7 步',flip:1,sh:[['c2',BAL6]],ln:[['e',50,50,50,100]],vb:[20,44,60,62]},
-  {t:'從下面的小洞吹氣，氣球就鼓起來了',sh:[['c2',BAL6]],ln:[['e',50,50,50,100]],ar:[[50,113,50,102,0,'p']],vb:[20,44,60,72]},
-  {t:'完成！',done:1,sh:[['c2',[50,20,80,35,50,50,20,35]],['c',[20,35,50,50,50,85,20,70]],['c',[80,35,50,50,50,85,80,70]]],ln:[['e',50,50,50,85]],vb:[10,12,80,80]}
-],cr:[['v',0,0,100,100,1],['v',100,0,0,100,1],['m',0,50,100,50,2]]},
-
-{id:'lotus',name:'蓮花',lv:3,frame:'s',vb:[-4,-4,108,108],steps:[
-  DIAG_CREASE(),
-  BLINTZ,
-  FOUR_IN([['c',D]],.22),
-  {t:'四個角再往中心點摺一次',sh:[['c',[25,25,75,25,75,75,25,75]]],ln:[['e',25,25,75,75],['e',75,25,25,75],['v',50,25,75,50],['v',75,50,50,75],['v',50,75,25,50],['v',25,50,50,25]],ar:[[28,28,46,46,-.3,'f'],[72,28,54,46,.3,'f'],[72,72,54,54,-.3,'f'],[28,72,46,54,.3,'f']],vb:[18,18,64,64]},
-  {t:'翻到背面，四個角再往中心點摺一次',flip:1,sh:[['c',[50,25,75,50,50,75,25,50]]],ln:[['v',37.5,37.5,62.5,37.5],['v',62.5,37.5,62.5,62.5],['v',62.5,62.5,37.5,62.5],['v',37.5,62.5,37.5,37.5]],ar:[[50,27,50,47,-.3,'f'],[73,50,53,50,-.3,'f'],[50,73,50,53,-.3,'f'],[27,50,47,50,-.3,'f']],vb:[18,18,64,64]},
-  {t:'壓住中間，從背面把花瓣一片一片往外拉出來',sh:[['c',[37.5,37.5,62.5,37.5,62.5,62.5,37.5,62.5]]],ln:[['e',37.5,37.5,62.5,62.5],['e',62.5,37.5,37.5,62.5]],ar:[[50,40,50,22,0,'p'],[60,50,78,50,0,'p'],[50,60,50,78,0,'p'],[40,50,22,50,0,'p']],vb:[18,18,64,64]},
-  {t:'完成！',done:1,sh:[['c2',petal(-45,42,13)],['c2',petal(45,42,13)],['c2',petal(135,42,13)],['c2',petal(225,42,13)],['c',petal(0,36,12)],['c',petal(90,36,12)],['c',petal(180,36,12)],['c',petal(270,36,12)],['c2',[45,45,55,45,55,55,45,55]]],vb:[4,4,92,92]}
-],cr:[['v',0,0,100,100,1],['v',100,0,0,100,1],['v',50,0,100,50,2],['v',100,50,50,100,2],['v',50,100,0,50,2],['v',0,50,50,0,2],
-  ['v',25,25,25,75,3],['m',25,0,25,25,3],['m',25,75,25,100,3],['v',75,25,75,75,3],['m',75,0,75,25,3],['m',75,75,75,100,3],
-  ['v',25,25,75,25,3],['m',0,25,25,25,3],['m',75,25,100,25,3],['v',25,75,75,75,3],['m',0,75,25,75,3],['m',75,75,100,75,3]]},
-
-{id:'pinwheel',name:'風車',lv:3,frame:'s',vb:[-4,-4,108,108],steps:[
-  {t:'白色面朝上。上下、左右各對摺一次，壓出十字線再打開',sh:[['w',SQ]],ln:[['v',50,0,50,100],['v',0,50,100,50]],ar:[[75,5,75,95,-.25,'f']]},
-  {t:'上下左右四個邊都往中線摺，壓線再打開',sh:[['w',SQ]],ln:[['x',50,0,50,100],['x',0,50,100,50],['v',0,25,100,25],['v',0,75,100,75],['v',25,0,25,100],['v',75,0,75,100]],ar:[[62,3,62,23,-.6,'f']]},
-  {t:'上下兩邊往中線摺',sh:[['w',SQ]],ln:[['x',25,0,25,100],['x',75,0,75,100],['v',0,25,100,25],['v',0,75,100,75]],ar:[[62,3,62,46,-.4,'f'],[62,97,62,54,.4,'f']]},
-  {t:'四個角往外拉出來，壓扁成三角形',sh:[['c',[0,25,100,25,100,75,0,75]]],ln:[['e',0,50,100,50],['x',25,25,25,75],['x',75,25,75,75],['v',25,50,0,25],['v',75,50,100,25],['v',25,50,0,75],['v',75,50,100,75]],ar:[[18,44,22,6,.3,'f'],[82,44,78,6,-.3,'f'],[18,56,22,94,-.3,'f'],[82,56,78,94,.3,'f']]},
-  {t:'右上那片往右摺、左下那片往左摺',sh:[['c',[25,25,75,25,75,75,25,75]],['c2',[25,25,50,25,25,0]],['c2',[75,25,50,25,75,0]],['c2',[25,75,50,75,25,100]],['c2',[75,75,50,75,75,100]]],ln:[['e',50,25,50,75]],ar:[[72,4,97,24,.4,'f'],[28,96,3,76,.4,'f']]},
-  {t:'完成！插上吸管或竹筷，就是風車',done:1,sh:[['c',[25,25,75,25,75,75,25,75]],['c2',[25,25,50,25,25,0]],['c2',[75,25,75,50,100,25]],['c2',[75,75,50,75,75,100]],['c2',[25,75,25,50,0,75]]],ln:[['e',25,25,75,75],['e',75,25,25,75]]}
-],cr:[['v',50,0,50,100,1],['v',0,50,100,50,1],['v',0,25,100,25,2],['v',0,75,100,75,2],['v',25,0,25,100,2],['v',75,0,75,100,2]]},
-
-{id:'shirt',name:'襯衫',lv:3,frame:'s',vb:[-4,-4,108,108],steps:[
-  {t:'白色面朝上。左右對摺壓出中線，再打開',sh:[['w',SQ]],ln:[['v',50,0,50,100]],ar:[[5,50,95,50,-.3,'f']]},
-  {t:'左右兩邊往中線摺',sh:[['w',SQ]],ln:[['x',50,0,50,100],['v',25,0,25,100],['v',75,0,75,100]],ar:[[3,40,47,40,-.4,'f'],[97,40,53,40,.4,'f']]},
-  {t:'翻到背面，上面往下摺一小段',flip:1,sh:[['c',[25,0,75,0,75,100,25,100]]],ln:[['v',25,10,75,10]],ar:[[60,1,60,18,-.9,'f']]},
-  {t:'翻回正面，中間上方兩個角往外斜摺，做出領子',flip:1,sh:[['c',[25,10,75,10,75,100,25,100]]],ln:[['e',50,10,50,100],['v',50,22,38,10],['v',50,22,62,10]],ar:[[49,12,36,21,.5,'f'],[51,12,64,21,-.5,'f']]},
-  {t:'下面中間兩個角往外斜摺，做出袖子',sh:[['c',[25,10,75,10,75,100,25,100]],['w',[38,10,38,22,50,22]],['w',[62,10,62,22,50,22]]],ln:[['e',50,22,50,100],['v',50,62,26,100],['v',50,62,74,100]],ar:[[48,98,20,80,-.4,'f'],[52,98,80,80,.4,'f']]},
-  {t:'下半部往上摺，塞到領子下面',sh:[['c',SHIRT],['w',[38,10,38,22,50,22]],['w',[62,10,62,22,50,22]],['c2',[50,62,15.7,78.4,26,100]],['c2',[50,62,84.3,78.4,74,100]]],ln:[['v',25,55,75,55]],ar:[[58,98,58,24,-.3,'f']]},
-  {t:'完成！',done:1,sh:[['c',[50,48,15.7,31.6,26,10]],['c',[50,48,84.3,31.6,74,10]],['c2',[25,10,75,10,75,55,25,55]],['w',[38,10,38,22,50,22]],['w',[62,10,62,22,50,22]]],ln:[['e',50,22,50,55]],vb:[10,4,80,56]}
-],cr:[['v',50,0,50,100,1],['v',25,0,25,100,2],['v',75,0,75,100,2],['m',25,10,75,10,3],['v',0,10,25,10,3],['v',75,10,100,10,3]]}
-);
-
-MODELS.sort((a,b)=>a.lv-b.lv);
+const MODELS=[
+{id:'dog',name:'狗臉',lv:1,frame:'d',paper:D,raw:[TOPDOWN,
+  {t:'左右兩個角往下摺，做出耳朵',ops:[['f',25,50,15,65,3,52,'v'],['f',75,50,85,65,97,52,'v']]},
+  {t:'下面的尖角：前面一層往上摺，後面一層往後摺',ops:[['f',35,85,65,85,50,98,'v',{sel:i=>i.oc&&i.oc[1]<50}],['f',35,85,65,85,50,98,'m',{sel:i=>i.oc&&i.oc[1]>50}]]},
+  {t:'完成！幫小狗畫上表情',done:1}]},
+{id:'cat',name:'貓臉',lv:1,frame:'d',paper:D,raw:[BOTUP,
+  {t:'上面的尖角往下摺，碰到底邊',ops:[['f',25,25,75,25,50,3,'v']]},
+  {t:'左右兩個角往上摺，做出耳朵',ops:[['f',35,50,15,35,3,49,'v'],['f',65,50,85,35,97,49,'v']]},
+  {t:'翻到背面',ops:[['flip']]},
+  {t:'完成！幫小貓畫上表情',done:1}]},
+{id:'tulip',name:'鬱金香',lv:1,frame:'d',paper:D,raw:[TOPDOWN,
+  {t:'左邊的角沿著虛線往上摺',ops:[['f',25,50,50,100,3,52,'v']]},
+  {t:'右邊的角也往上摺',ops:[['f',75,50,50,100,97,52,'v']]},
+  {t:'完成！貼在紙上，畫上花莖和葉子',done:1}]},
+{id:'cup',name:'杯子',lv:1,frame:'d',paper:D,raw:[BOTUP,
+  {t:'左邊的角往右摺，尖角碰到右邊的斜邊',ops:[['f',...CG,...CF,3,48,'v']]},
+  {t:'右邊的角也往左摺，碰到左邊的斜邊',ops:[['f',...CQ,...CF2,97,48,'v']]},
+  {t:'上面尖角的前面一層，往下摺',ops:[['f',...CG,...CQ,50,3,'v',{sel:i=>i.oc&&i.oc[1]>50}]]},
+  {t:'後面那一層往後摺',ops:[['f',...CG,...CQ,50,3,'m',{sel:i=>i.oc&&i.oc[1]<50}]]},
+  {t:'完成！打開上面的開口，就是一個小杯子',done:1}]},
+{id:'fox',name:'小狐狸',lv:1,frame:'d',paper:D,raw:[TOPDOWN,
+  {t:'左右兩個角往上斜摺，做出耳朵',ops:[['f',15,50,28,78,3,52,'v'],['f',85,50,72,78,97,52,'v']]},
+  {t:'完成！幫小狐狸畫上眼睛和鼻子',done:1}]},
+{id:'penguin',name:'企鵝',lv:1,frame:'d',paper:D,raw:[VCR,
+  {t:'左右兩個角往中間摺，不要碰到中線',ops:[['f',20,30,20,70,3,50,'v'],['f',80,30,80,70,97,50,'v']]},
+  {t:'下面的尖角往後摺',ops:[['f',30,80,70,80,50,98,'m']]},
+  {t:'上面的尖角往下摺，做出嘴巴',ops:[['f',38,12,62,12,50,2,'v']]},
+  {t:'完成！',done:1,dots:[[41,21,1.8],[59,21,1.8]]}]},
+{id:'bookmark',name:'書籤',lv:1,frame:'d',paper:D,raw:[BOTUP,
+  {t:'前面這一層的尖角往下摺，碰到底邊',ops:[['f',25,25,75,25,50,3,'v',{sel:i=>i.oc&&i.oc[1]>50}]]},
+  {t:'左右兩個角往上摺到頂端，壓出摺線再打開',ops:[['f',25,25,50,50,3,48,'v',U],['f',75,25,50,50,97,48,'v',U]]},
+  {t:'把兩個角沿摺線塞進前面那一片的口袋裡',ops:[['key',[['w',[25,25,50,0,75,25,50,50]],['w',[25,25,75,25,50,50]]],{ar:[[5,46,34,36,-.3,'f'],[95,46,66,36,.3,'f']]}]]},
+  {t:'完成！套在書頁的角上，就是書籤',done:1}]},
+{id:'envelope',name:'信封',lv:1,frame:'d',paper:D,raw:[
+  {t:'菱形擺放，白色面朝上。左邊的角往中心點摺',ops:[['f',25,25,25,75,3,50,'v']]},
+  {t:'右邊的角也往中心點摺',ops:[['f',75,25,75,75,97,50,'v']]},
+  {t:'下面的尖角往上摺，超過中心一點',ops:[['f',20,70,80,70,50,98,'v']]},
+  {t:'上面的尖角往下摺，蓋住開口',ops:[['f',20,30,80,30,50,2,'v']]},
+  {t:'完成！寫上祝福，放進小卡片',done:1}]},
+{id:'icecream',name:'冰淇淋',lv:1,frame:'d',paper:D,raw:[VCR,LOK,
+  {t:'上面的尖角往下摺一點點',ops:[['f',35.35,14.65,64.65,14.65,50,2,'v']]},
+  {t:'左右兩個角往後摺，讓冰淇淋圓一點',ops:[['f',25.66,24.34,23.39,35.76,20,30,'m'],['f',74.34,24.34,76.61,35.76,80,30,'m']]},
+  {t:'完成！畫上冰淇淋的花紋',done:1}]},
+{id:'sailboat',name:'帆船',lv:1,frame:'d',paper:D,raw:[BOTUP,
+  {t:'前面這一層的尖角往後摺，塞進兩層中間',ops:[['f',25,25,75,25,50,3,'m',{sel:i=>i.oc&&i.oc[1]>50}]]},
+  {t:'左右兩個下角往後摺，做出船身',ops:[['f',10,40,18,50,4,49,'m'],['f',90,40,82,50,96,49,'m']]},
+  {t:'完成！',done:1}]},
+{id:'hat',name:'紙帽子',lv:1,frame:'s',pw:HW,ph:100,paper:[0,0,HW,0,HW,100,0,100],raw:[
+  {t:'用長方形的紙（A4 大小），白色面朝上。上往下對摺',ops:[['f',0,50,HW,50,HC,3,'v']]},
+  {t:'左右對摺壓出中線，再打開',ops:[['f',HC,50,HC,100,3,75,'v',U]]},
+  {t:'上面兩個角往下摺，對齊中線',ops:[['f',HC,50,0,85.35,3,53,'v'],['f',HC,50,HW,85.35,HW-3,53,'v']]},
+  {t:'下面前面這一層往上摺',ops:[['f',0,85.35,HW,85.35,HC,99,'v',{sel:i=>i.oc&&i.oc[1]<50}]]},
+  {t:'後面那一層往後摺上去',ops:[['f',0,85.35,HW,85.35,HC,99,'m',{sel:i=>i.oc&&i.oc[1]>50}]]},
+  {t:'完成！打開下面就能戴',done:1}]},
+{id:'helmet',name:'頭盔',lv:2,frame:'d',paper:D,raw:[TOPDOWN,
+  {t:'左右兩個角往下摺，對齊下面的尖角',ops:[['f',50,50,25,75,3,53,'v'],['f',50,50,75,75,97,53,'v']]},
+  {t:'剛摺下來的兩個尖角，再往上摺到頂端',ops:[['f',25,75,75,75,50,98,'v',{sel:flap}]]},
+  {t:'兩個尖角往外斜摺，做出頭盔的角',ops:[['f',50,75,40,60,49,52,'v',{sel:i=>flap(i)&&i.oc[0]<50}],['f',50,75,60,60,51,52,'v',{sel:i=>flap(i)&&i.oc[0]>50}]]},
+  {t:'下面尖角的前面一層，往上摺',ops:[['f',32,82,68,82,50,98,'v',{sel:i=>!flap(i)&&i.oc[1]<50}]]},
+  {t:'後面那一層往後摺',ops:[['f',32,82,68,82,50,98,'m',{sel:i=>!flap(i)&&i.oc[1]>50}]]},
+  {t:'完成！可以戴在頭上當裝飾',done:1}]},
+{id:'plane',name:'紙飛機',lv:2,frame:'s',pw:HW,ph:100,paper:[0,0,HW,0,HW,100,0,100],raw:[
+  {t:'用長方形的紙（A4 大小），白色面朝上。左右對摺壓出中線，再打開',ops:[['f',HC,0,HC,100,3,50,'v',U]]},
+  {t:'上面兩個角往中線摺',ops:[['f',HC,0,0,HC,2,2,'v'],['f',HC,0,HW,HC,HW-2,2,'v']]},
+  {t:'左右兩條斜邊，再往中線摺一次',ops:[['f',HC,0,0,85.36,3,62,'v'],['f',HC,0,HW,85.36,HW-3,62,'v']]},
+  {t:'沿著中線往後對摺',ops:[['f',HC,0,HC,100,3,90,'m']]},
+  {t:'前面這一片往下摺，做出機翼',ops:[['f',HC,0,HC+11,100,HW-2,95,'v',{sel:i=>i.oc&&i.oc[0]>HC}]]},
+  {t:'後面那一片也往後摺下去',ops:[['f',HC,0,HC+11,100,HW-2,95,'m',{sel:i=>i.oc&&i.oc[0]<HC}]]},
+  {t:'完成！把兩邊機翼打開，就可以射出去了',done:1,final:[['c',[HC,2,HW-1,86,HC+5,80,HC,98,HC-5,80,1,86]]],ln:[['e',HC,2,HC,98]]}]},
+{id:'teller',name:'東南西北',lv:2,frame:'s',paper:SQ,raw:[DIAGC,BLZ,
+  {t:'翻到背面',ops:[['flip']]},
+  FOURIN(),
+  {t:'上下、左右各對摺一次壓線，再把手指伸進下面四個口袋，往中間推',ops:[['key',[['c',[25,25,75,25,75,75,25,75]]],{ln:[['e',25,25,75,75],['e',75,25,25,75],['v',50,25,50,75],['v',25,50,75,50]],ar:[[6,50,21,50,0,'p'],[94,50,79,50,0,'p'],[50,6,50,21,0,'p'],[50,94,50,79,0,'p']]}]]},
+  {t:'完成！寫上顏色和數字，就可以玩東南西北',done:1,final:[['c',[18,18,48,18,48,48,18,48]],['c',[52,18,82,18,82,48,52,48]],['c',[18,52,48,52,48,82,18,82]],['c',[52,52,82,52,82,82,52,82]]],ln:[['e',18,18,48,48],['e',48,18,18,48],['e',52,18,82,48],['e',82,18,52,48],['e',18,52,48,82],['e',48,52,18,82],['e',52,52,82,82],['e',82,52,52,82]]}]},
+{id:'heart',name:'愛心',lv:2,frame:'d',paper:D,raw:[
+  {t:'菱形擺放，白色面朝上。上下、左右各對摺一次，壓出十字線再打開',ops:[['f',0,50,100,50,50,5,'v',U],['f',50,0,50,100,5,50,'v',U]]},
+  {t:'上角往下摺到中心點',ops:[['f',25,25,75,25,50,3,'v']]},
+  {t:'下角往上摺，碰到上面的邊',ops:[['f',12.5,62.5,87.5,62.5,50,97,'v']]},
+  {t:'下面左右兩邊往上摺，對齊中間的線',ops:[['f',50,62.5,81.25,31.25,93,56,'v'],['f',50,62.5,18.75,31.25,7,56,'v']]},
+  {t:'翻到背面',ops:[['flip']]},
+  {t:'左右兩個角往後摺一點，讓愛心圓一點',ops:[['f',23,27,23,35.5,19,31,'m'],['f',77,27,77,35.5,81,31,'m']]},
+  {t:'完成！',done:1}]},
+{id:'cicada',name:'蟬',lv:2,frame:'d',paper:D,raw:[BOTUP,
+  {t:'左右兩個角往上摺到頂端',ops:[['f',25,25,50,50,3,48,'v'],['f',75,25,50,50,97,48,'v']]},
+  {t:'兩個尖角往外斜摺下來，做出翅膀',ops:[['f',25,25,50,30,48,3,'v',{sel:i=>flap(i)&&i.oc[0]<50}],['f',75,25,50,30,52,3,'v',{sel:i=>flap(i)&&i.oc[0]>50}]]},
+  {t:'上面前面這一層往下摺',ops:[['f',38,12,62,12,50,1,'v',{sel:i=>!flap(i)&&i.oc[1]>50}]]},
+  {t:'下一層也往下摺，比上一層高一點',ops:[['f',44,6,56,6,50,.5,'v',{sel:i=>!flap(i)&&i.oc[1]<50}]]},
+  {t:'翻到背面，左右兩邊往後摺一點，讓身體變窄',ops:[['flip'],['f',35,10,40,50,26,30,'m',{sel:i=>!flap(i)}],['f',65,10,60,50,74,30,'m',{sel:i=>!flap(i)}]]},
+  {t:'完成！',done:1}]},
+{id:'tree',name:'聖誕樹',lv:2,frame:'d',paper:D,raw:[VCR,UPK,
+  {t:'下面的尖角往上摺',ops:[['f',28.71,78,71.29,78,50,98,'v']]},
+  {t:'再往下摺回一點，做出樹幹',ops:[['f',36.71,70,63.29,70,50,58,'v',{sel:i=>i.oc&&i.oc[1]>78}]]},
+  {t:'翻到背面',ops:[['flip']]},
+  {t:'完成！畫上彩球和星星',done:1}]},
+{id:'frame',name:'相框',lv:2,frame:'s',paper:SQ,raw:[DIAGC,BLZ,
+  {t:'翻到背面',ops:[['flip']]},
+  FOURIN(true),
+  {t:'中間的四個尖角，往外摺到邊上',ops:[['f',37.5,37.5,62.5,37.5,50,48,'v',{sel:hasT('T')}],['f',62.5,37.5,62.5,62.5,52,50,'v',{sel:hasT('R')}],['f',62.5,62.5,37.5,62.5,50,52,'v',{sel:hasT('B')}],['f',37.5,62.5,37.5,37.5,48,50,'v',{sel:hasT('L')}]]},
+  {t:'完成！中間貼上照片或畫畫',done:1}]},
+{id:'fan',name:'紙扇',lv:2,frame:'s',paper:SQ,raw:[
+  {t:'白色面朝上。上下對摺壓線，再打開',ops:[['f',0,50,100,50,50,3,'v',U]]},
+  {t:'上下兩邊往中線摺，壓線再打開',ops:[['f',0,25,100,25,50,2,'v',U],['f',0,75,100,75,50,98,'v',U]]},
+  {t:'每一格再對摺一次，壓出 8 格摺線',ops:[['f',0,12.5,100,12.5,50,1,'v',U],['f',0,37.5,100,37.5,50,1,'v',U],['f',0,62.5,100,62.5,50,99,'v',U],['f',0,87.5,100,87.5,50,99,'v',U]]},
+  {t:'照著摺線，一正一反來回摺成長條',ops:[['key',[['c',[0,44,100,44,100,56.5,0,56.5]]],{ln:[['v',0,12.5,100,12.5],['m',0,25,100,25],['v',0,37.5,100,37.5],['m',0,50,100,50],['v',0,62.5,100,62.5],['m',0,75,100,75],['v',0,87.5,100,87.5]],ar:[[50,-10,50,3,0,'p'],[50,110,50,97,0,'p']]}]]},
+  {t:'長條對摺，下面用膠帶黏緊',ops:[['f',50,44,50,56.5,96,50,'v']]},
+  {t:'完成！打開就是一把扇子',done:1,final:[['c',FAN]],ln:fanRibs()}]},
+{id:'butterfly',name:'蝴蝶',lv:2,frame:'s',paper:SQ,raw:[...WBSTEPS,
+  {t:'翻到背面，上面尖角往下摺，超過底邊一點',ops:[['flip'],['f',30,80,70,80,50,52,'v',{sel:i=>i.has('b')}]]},
+  {t:'完成！沿中線輕輕往後彎，翅膀就會立起來',done:1}]},
+{id:'house',name:'房子',lv:2,frame:'s',paper:SQ,raw:[
+  {t:'白色面朝上。上往下對摺',ops:[['f',0,50,100,50,50,3,'v']]},
+  {t:'左右對摺壓出中線，再打開',ops:[['f',50,50,50,100,4,76,'v',U]]},
+  {t:'左右兩邊往中線摺',ops:[['f',25,50,25,100,3,62,'v'],['f',75,50,75,100,97,62,'v']]},
+  {t:'把上面兩個角撐開，往外壓扁，變成屋頂',ops:[['key',[['c',[25,50,75,50,50,75]],['c',[25,75,75,75,75,100,25,100]],['c',[0,75,25,50,50,75]],['c',[50,75,75,50,100,75]]],{ln:[['v',25,50,50,75],['v',75,50,50,75]],ar:[[44,56,6,72,.35,'f'],[56,56,94,72,-.35,'f']]}]]},
+  {t:'完成！畫上門和窗戶',done:1,ln:[['e',50,75,50,100]]}]},
+{id:'bird',name:'小鳥',lv:2,frame:'d',paper:D,raw:[VCR,LOK,
+  {t:'上面的尖角往下摺',ops:[['f',20.71,29.29,79.29,29.29,50,3,'v']]},
+  {t:'沿中線往後對摺',ops:[['f',50,0,50,100,25,45,'m']]},
+  {t:'把尖尖的那一端往上拉，做成脖子和頭',ops:[['key',[['c',[12,50,72,56,42,82]],['c',[58,57,76,14,68,57]],['c',[76,14,90,22,74,24]],['c',[30,58,62,58,40,74]]],{ar:[[53,96,88,14,.3,'f']]}]]},
+  {t:'完成！',done:1,dots:[[78,18,1.2]]}]},
+{id:'stem',name:'花莖與葉子',lv:2,frame:'d',paper:D,raw:[VCR,UPK,
+  {t:'下面左右兩邊也往中線摺，變得更細',ops:[['f',50,100,29.29,50,22,72,'v'],['f',50,100,70.71,50,78,72,'v']]},
+  {t:'下半部往上對摺',ops:[['f',29.29,50,70.71,50,52,97,'v']]},
+  {t:'沿中線往後對摺',ops:[['f',50,0,50,50,40,40,'m']]},
+  {t:'把裡面那一層往外拉出來，變成葉子',ops:[['key',[['c',[48,6,52,6,53,98,47,98]],['c',[52,72,86,28,57,82]]],{ar:[[58,30,78,10,0,'p']]}]]},
+  {t:'完成！可以和鬱金香放在一起',done:1}]},
+{id:'frog',name:'跳跳蛙',lv:3,frame:'s',pw:50,ph:100,paper:FR,extraCr:[['m',0,25,50,25,2]],raw:[
+  {t:'白色面朝上。上方兩個角各往對面斜摺，壓出叉線再打開',ops:[['f',0,0,50,50,48,3,'v',U],['f',50,0,0,50,2,3,'v',U]]},
+  {t:'上面往後摺壓線，再把兩邊往內壓，收成一個三角形',ops:[['key',[['w',[0,50,50,50,50,100,0,100],'base'],['w',[0,50,50,50,25,25],'tb'],['w',[0,50,25,50,25,25],'fl'],['w',[25,50,50,50,25,25],'fr']],{ln:[['m',0,25,50,25]],ar:[[-16,25,-3,25,0,'p'],[66,25,53,25,0,'p'],[25,-11,25,3,0,'p']]}]]},
+  {t:'三角形前面的兩個角，往上摺到頂端，做出前腳',ops:[['f',12.5,37.5,25,50,2,48,'v',{sel:hasT('fl')}],['f',37.5,37.5,25,50,48,48,'v',{sel:hasT('fr')}]]},
+  {t:'下面長方形的左右兩邊往中間摺',ops:[['f',12.5,50,12.5,100,2,82,'v',{sel:hasT('base')}],['f',37.5,50,37.5,100,48,82,'v',{sel:hasT('base')}]]},
+  {t:'下面往上摺，對齊三角形的底邊',ops:[['f',12.5,75,37.5,75,25,97,'v',{sel:hasT('base'),tag:'spring'}]]},
+  {t:'再往下摺回一半，做出彈簧',ops:[['f',12.5,62.5,37.5,62.5,25,52,'v',{sel:hasT('spring')}]]},
+  {t:'翻到背面',ops:[['flip']]},
+  {t:'完成！用手指壓一下青蛙屁股再滑開，青蛙就會跳',done:1,dots:[[19,43,2],[31,43,2]]}]},
+{id:'box',name:'紙盒',lv:3,frame:'s',paper:SQ,raw:[DIAGC,BLZ,
+  {t:'轉成正方形擺放。上下左右四個邊都往中心摺，壓出摺線再打開',ops:[['rot',-45],['f',BL,BA,BH,BA,50,16,'v',U],['f',BL,BB,BH,BB,50,84,'v',U],['f',BA,BL,BA,BH,16,50,'v',U],['f',BB,BL,BB,BH,84,50,'v',U]]},
+  {t:'把上下兩片三角形打開',ops:[['key',[['w',BHEX],['c',[BL,BL,BL,BH,50,50]],['c',[BH,BL,BH,BH,50,50]]],{ar:[[57,40,57,-14,.3,'f'],[57,60,57,114,-.3,'f']]}]]},
+  {t:'左右兩邊沿摺線立起來，變成兩面牆',ops:[['key',[['w',BHEX],['c',[BL,BL,BL,BH,50,50]],['c',[BH,BL,BH,BH,50,50]]],{ln:[['v',BA,BL,BA,BH],['v',BB,BL,BB,BH]],ar:[[8,50,28,50,-.7,'f'],[92,50,72,50,.7,'f']]}]]},
+  {t:'上面這一頭沿著摺線往內收，尖角摺進盒子裡',ops:[['key',[['w',[BL,BA,BH,BA,BH,BH,50,120.71,BL,BH]],['c',[BL,18,BH,18,BH,BA,BL,BA]]],{ln:[['v',BA,BA,BB,BA],['v',BA,-3.04,BB,-3.04]],ar:[[43,-17,43,40,-.35,'f'],[12,8,27,24,0,'p'],[88,8,73,24,0,'p']]}]]},
+  {t:'下面這一頭也用同樣的方法收進去',ops:[['key',[['c',[18,18,82,18,82,82,18,82]],['c2',[30,30,70,30,70,70,30,70]]],{ln:[['v',BA,BB,BB,BB],['v',BA,103.04,BB,103.04]],ar:[[57,117,57,60,-.35,'f'],[12,92,27,76,0,'p'],[88,92,73,76,0,'p']]}]]},
+  {t:'完成！可以裝小東西',done:1,ln:[['e',18,18,30,30],['e',82,18,70,30],['e',82,82,70,70],['e',18,82,30,70]]}]},
+{id:'crane',name:'紙鶴',lv:3,frame:'s',paper:SQ,raw:[DIAGC,
+  {t:'翻到背面。上下、左右各對摺一次，壓出十字線再打開',ops:[['flip'],['f',0,50,100,50,50,4,'v',U],['f',50,0,50,100,4,50,'v',U]]},
+  {t:'沿著摺線，把四個角往下收，合成一個小正方形',ops:[['key',[['w',PB,'back'],['c',[50,15,50,85,15,50],'fl'],['c',[50,15,85,50,50,85],'fr']],{ar:[[-2,50,17,50,0,'p'],[102,50,83,50,0,'p'],[44,3,44,44,-.3,'f']]}]]},
+  {t:'前面一層的左右兩邊，往中線摺',ops:[['f',50,85,29.5,35.5,14,53,'v',{sel:hasT('fl')}],['f',50,85,70.5,35.5,86,53,'v',{sel:hasT('fr')}]]},
+  {t:'上面的三角形往下摺壓線，再把剛剛摺的三個地方打開',ops:[['f',29.5,35.5,70.5,35.5,50,17,'v',U],['key',[['w',PB,'back'],['c',[50,15,50,85,15,50],'fl'],['c',[50,15,85,50,50,85],'fr']]]]},
+  {t:'把前面一層的下角往上拉，兩邊沿著摺線往中間收',ops:[['key',[['w',PB,'','c'],['c2',PETAL]],{ln:[['m',29.5,35.5,50,85],['m',70.5,35.5,50,85],['v',29.5,35.5,70.5,35.5]],ar:[[53,82,53,-12,-.3,'f'],[16,56,33,52,0,'p'],[84,56,67,52,0,'p']]}]]},
+  {t:'翻到背面，另一面也照第 4～6 步做一次',ops:[['flip'],['key',[['c2',PETAL]]]]},
+  {t:'前後兩層的下半部，都往中線摺細',ops:[['f',50,85,40.2,35.5,31,44,'v'],['f',50,85,59.8,35.5,69,44,'v']]},
+  {t:'兩個細尖角往左上、右上反摺，變成脖子和尾巴',ops:[['key',[['c',[40,48,6,4,48,38]],['c',[60,48,94,4,52,38]],['c2',[50,-14,70.5,35.5,50,46,29.5,35.5]]],{ln:[['v',41,42,50,62],['v',59,42,50,62]],ar:[[46,82,10,20,-.3,'f'],[54,82,90,20,.3,'f']]}]]},
+  {t:'左邊的尖端往下反摺，做出頭',ops:[['key',[['c',[40,48,13,12,48,38]],['c',[13,12,19,8,5,22]],['c',[60,48,94,4,52,38]],['c2',[50,-14,70.5,35.5,50,46,29.5,35.5]]],{ln:[['v',11,15,18,9]],ar:[[4,4,4,20,-.9,'f']]}]]},
+  {t:'兩邊翅膀往下摺',ops:[['key',[['c',[40,48,13,12,48,38]],['c',[13,12,19,8,5,22]],['c',[60,48,94,4,52,38]],['c',[29.5,35.5,50,46,70.5,35.5,50,30]],['c2',[29.5,35.5,70.5,35.5,50,84]]],{ln:[['v',29.5,35.5,70.5,35.5]],ar:[[57,-10,57,72,-.3,'f']]}]]},
+  {t:'完成！輕輕把翅膀往兩邊拉開',done:1}]},
+{id:'balloon',name:'氣球',lv:3,frame:'s',paper:SQ,raw:[...WBSTEPS,
+  {t:'翻到背面，另一面的兩個角也往上摺到頂端',ops:[['flip'],['f',25,75,50,100,3,98,'v',{sel:i=>i.has('b')}],['f',75,75,50,100,97,98,'v',{sel:i=>i.has('b')}]]},
+  {t:'前面這一層，左右兩個角往中線摺',ops:[['f',37.5,62.5,37.5,87.5,26,75,'v',{sel:i=>i.has('b')}],['f',62.5,62.5,62.5,87.5,74,75,'v',{sel:i=>i.has('b')}]]},
+  {t:'上面兩個小三角形往下摺，塞進旁邊的口袋',ops:[['key',[['w',BAL6]],{ln:[['v',41,59,50,68],['v',59,59,50,68]],ar:[[44,53,43,70,-.5,'f'],[56,53,57,70,.5,'f']]}]]},
+  {t:'翻到背面，另一面也做第 6、7 步',ops:[['flip'],['key',[['w',BAL6]]]]},
+  {t:'從下面的小洞吹氣，氣球就鼓起來了',ops:[['key',[['c2',[50,20,80,35,50,50,20,35]],['w',[20,35,50,50,50,85,20,70]],['c',[80,35,50,50,50,85,80,70]]],{ar:[[50,113,50,102,0,'p']]}]]},
+  {t:'完成！',done:1,ln:[['e',50,50,50,85]]}]},
+{id:'lotus',name:'蓮花',lv:3,frame:'s',paper:SQ,raw:[DIAGC,BLZ,FOURIN(),
+  {t:'四個角再往中心點摺一次',ops:[['f',50,25,25,50,27,27,'v'],['f',50,25,75,50,73,27,'v'],['f',75,50,50,75,73,73,'v'],['f',50,75,25,50,27,73,'v']]},
+  {t:'翻到背面，四個角再往中心點摺一次',ops:[['flip'],['f',37.5,37.5,62.5,37.5,50,27,'v'],['f',62.5,37.5,62.5,62.5,73,50,'v'],['f',62.5,62.5,37.5,62.5,50,73,'v'],['f',37.5,62.5,37.5,37.5,27,50,'v']]},
+  {t:'壓住中間，從背面把花瓣一片一片往外拉出來',ops:[['key',[['c2',petal(-45,42,13)],['c2',petal(45,42,13)],['c2',petal(135,42,13)],['c2',petal(225,42,13)],['c',petal(0,36,12)],['c',petal(90,36,12)],['c',petal(180,36,12)],['c',petal(270,36,12)],['c2',[45,45,55,45,55,55,45,55]]],{ar:[[50,40,50,22,0,'p'],[60,50,78,50,0,'p'],[50,60,50,78,0,'p'],[40,50,22,50,0,'p']]}]]},
+  {t:'完成！',done:1}]},
+{id:'pinwheel',name:'風車',lv:3,frame:'s',paper:SQ,raw:[
+  {t:'白色面朝上。上下、左右各對摺一次，壓出十字線再打開',ops:[['f',0,50,100,50,75,4,'v',U],['f',50,0,50,100,4,25,'v',U]]},
+  {t:'上下左右四個邊都往中線摺，壓線再打開',ops:[['f',0,25,100,25,62,2,'v',U],['f',0,75,100,75,62,98,'v',U],['f',25,0,25,100,2,62,'v',U],['f',75,0,75,100,98,62,'v',U]]},
+  {t:'上下兩邊往中線摺',ops:[['f',0,25,100,25,62,2,'v'],['f',0,75,100,75,62,98,'v']]},
+  {t:'四個角往外拉出來，壓扁成三角形',ops:[['key',[['c',[25,25,75,25,75,75,25,75]],['c2',[25,25,50,25,25,0],'TL','c2'],['c2',[75,25,50,25,75,0],'TR','c2'],['c2',[25,75,50,75,25,100],'BL','c2'],['c2',[75,75,50,75,75,100],'BR','c2']],{ar:[[18,44,22,6,.3,'f'],[82,44,78,6,-.3,'f'],[18,56,22,94,-.3,'f'],[82,56,78,94,.3,'f']]}]]},
+  {t:'右上那片往右摺、左下那片往左摺',ops:[['f',75,25,50,50,62,8,'v',{sel:hasT('TR')}],['f',25,75,50,50,38,92,'v',{sel:hasT('BL')}]]},
+  {t:'完成！插上吸管或竹筷，就是風車',done:1,ln:[['e',25,25,75,75],['e',75,25,25,75]]}]},
+{id:'shirt',name:'襯衫',lv:3,frame:'s',paper:SQ,raw:[
+  {t:'白色面朝上。左右對摺壓出中線，再打開',ops:[['f',50,0,50,100,5,50,'v',U]]},
+  {t:'左右兩邊往中線摺',ops:[['f',25,0,25,100,3,40,'v'],['f',75,0,75,100,97,40,'v']]},
+  {t:'翻到背面，上面往下摺一小段',ops:[['flip'],['f',0,10,100,10,60,1,'v']]},
+  {t:'翻回正面，中間上方兩個角往外斜摺，做出領子',ops:[['flip'],['f',50,22,38,10,49,11,'v',{sel:i=>i.oc&&i.oc[0]<25,tag:'collar'}],['f',50,22,62,10,51,11,'v',{sel:i=>i.oc&&i.oc[0]>75,tag:'collar'}]]},
+  {t:'下面中間兩個角往外斜摺，做出袖子',ops:[['f',50,62,26,100,48,98,'v',{sel:i=>i.oc&&i.oc[0]<25&&!i.has('collar')}],['f',50,62,74,100,52,98,'v',{sel:i=>i.oc&&i.oc[0]>75&&!i.has('collar')}]]},
+  {t:'下半部往上摺，塞到領子下面',ops:[['f',0,55,100,55,58,98,'v',{under:'collar'}]]},
+  {t:'完成！',done:1}]}
+];
+MODELS.forEach(compileModel);
+const LV={1:'入門',2:'中等',3:'進階'};
 
 // ===== 繪圖核心：所有頁面先變成 mm 單位的圖元，再交給畫布或 PPT =====
 const FONT='"Noto Sans TC","Noto Sans CJK TC","PingFang TC","Microsoft JhengHei",sans-serif';
@@ -868,6 +983,214 @@ async function saveFile(blob,name){
   return 'saved';
 }
 
+// ===== 動畫帶領（依摺紙模擬播放，正反面與層次都正確）=====
+const PL={m:null,k:0,seq:null,raf:0,slow:false,sound:true,S:null,canvas:null,ctx:null,done:false,vb:null,vbFrom:null};
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+function fillOfF(f){return f.fill||(f.up?'w':'c');}
+function stepScript(m,k){
+  const s=m.steps[k];
+  if(s.done) return [{type:'celebrate'}];
+  const ops=m.sim[k].ops,segs=[];
+  const leadFlip=ops[0]&&ops[0][0]==='flip';
+  segs.push({type:'show',lines:!leadFlip});
+  ops.forEach((op,i)=>{
+    if(op[0]==='flip'){segs.push({type:'flip'});if(i===0&&ops.length>1)segs.push({type:'show',lines:true,short:1});}
+    else if(op[0]==='rot') segs.push({type:'rot',deg:op[1]});
+    else if(op[0]==='f') segs.push({type:'fold',op});
+    else if(op[0]==='key') segs.push({type:'key',shapes:op[1]});
+  });
+  return segs;
+}
+function segDur(seg,n){
+  const b={show:seg.short?.6:1.1,fold:n>2?.95:1.35,flip:1.2,rot:1,key:1.1,celebrate:2.6}[seg.type];
+  return b*(PL.slow?1.7:1)*(seg.type==='fold'&&seg.op[8]&&seg.op[8].unfold?1.5:1);
+}
+function vbOf(m,s){return (s&&s.vb)||m.vb;}
+function lerpVb(a,b,t){return a.map((v,i)=>v+(b[i]-v)*t);}
+function drawLayer(ctx,m,like,alpha,size,ox,oy,sc){
+  if(alpha<=0.001) return;
+  ctx.save();ctx.globalAlpha=alpha;ctx.translate(ox*sc,oy*sc);
+  drawPrims(ctx,diagram(m,like,0,0,size,st.color).filter(p=>!(p.k==='rect'||(p.k==='text'&&p.text==='翻面')||(p.k==='path'&&p.stroke===ORANGE))),sc);
+  ctx.restore();
+}
+function paint(f){
+  const c=PL.canvas,ctx=PL.ctx,W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);
+  const size=100,sc=Math.min(W,H)/size*.94,ox=(W-size*sc)/2/sc,oy=(H-size*sc)/2/sc;
+  f(ctx,size,ox,oy,sc);
+}
+function curVb(now){
+  if(!PL.vbFrom) return PL.vb;
+  const t=Math.min(1,(now-PL.vbT0)/600);if(t>=1){PL.vbFrom=null;return PL.vb;}
+  return lerpVb(PL.vbFrom,PL.vb,ease(t));
+}
+function liveShapes(S){return stateShapes(S);}
+function playStep(){
+  cancelAnimationFrame(PL.raf);
+  const m=PL.m,k=PL.k,s=m.steps[k];
+  const nvb=vbOf(m,s);
+  if(PL.vb&&PL.vb.join()!==nvb.join()){PL.vbFrom=PL.vb.slice();PL.vbT0=performance.now();} else PL.vbFrom=null;
+  PL.vb=nvb;
+  PL.S=cloneState(m.states[k]);
+  PL.seq=stepScript(m,k);PL.si=0;PL.t0=performance.now();PL.done=false;
+  updateUI();
+  PL.raf=requestAnimationFrame(tick);
+}
+function tick(now){
+  const m=PL.m,s=m.steps[PL.k],seg=PL.seq[PL.si];
+  if(!seg){PL.done=true;renderIdle();updateUI();return;}
+  const nF=PL.seq.filter(x=>x.type==='fold').length;
+  const dur=segDur(seg,nF)*1000,t=Math.min(1,(now-PL.t0)/dur);
+  const S=PL.S,vb=curVb(now);
+  if(seg.type==='show'){
+    const pulse=.55+.45*Math.abs(Math.sin(t*Math.PI*2));
+    paint((ctx,size,ox,oy,sc)=>{
+      drawLayer(ctx,m,{sh:liveShapes(S),ln:preLines(S),vb},1,size,ox,oy,sc);
+      if(seg.lines) drawLayer(ctx,m,{sh:[],ln:s.ln.filter(l=>l[0]!=='x'),ar:s.ar,vb},pulse,size,ox,oy,sc);
+    });
+  }else if(seg.type==='fold'){
+    if(!seg.r){seg.r=opFold(cloneState(S),seg.op,PL.k+1);if(PL.sound)setTimeout(()=>paperSound(),dur*.3);}
+    const r=seg.r,op=seg.op,unf=op[8]&&op[8].unfold;
+    const A=[op[1],op[2]],d=[op[3]-op[1],op[4]-op[2]],L=Math.hypot(d[0],d[1]),n=[-d[1]/L,d[0]/L];
+    const tt=unf?(t<.45?ease(t/.45):t<.6?1:1-ease((t-.6)/.4)):ease(t);
+    const k2=1-Math.cos(Math.PI*tt);
+    const items=[];
+    r.keep.forEach(f=>items.push({z:f.z,fill:fillOfF(f),pts:f.pts}));
+    if(r.neu||unf){
+      r.mov.forEach((f,i)=>{
+        const q=[];for(let j=0;j<f.pts.length;j+=2){const sd=(f.pts[j]-A[0])*n[0]+(f.pts[j+1]-A[1])*n[1];q.push(f.pts[j]-n[0]*sd*k2,f.pts[j+1]-n[1]*sd*k2);}
+        const after=tt>.5;
+        const nz=r.neu?r.neu[i].z:(op[7]==='v'?1e6+f.z:-1e6-f.z);
+        items.push({z:after?nz:f.z,fill:after?(f.fill?(f.back||swapFill(f.fill)):(f.up?'c':'w')):fillOfF(f),pts:q});
+      });
+    }
+    items.sort((a,b)=>a.z-b.z);
+    paint((ctx,size,ox,oy,sc)=>{
+      drawLayer(ctx,m,{sh:items.map(x=>[x.fill,x.pts]),ln:preLines(S,r.keep),vb},1,size,ox,oy,sc);
+      const seg2=s.ln.find(l=>l[0]===op[7]&&Math.abs(cr2(d[0],d[1],l[1]-A[0],l[2]-A[1]))<1e-3*L*L&&Math.abs(cr2(d[0],d[1],l[3]-A[0],l[4]-A[1]))<1e-3*L*L);
+      if(seg2) drawLayer(ctx,m,{sh:[],ln:[seg2],vb},Math.max(0,1-tt*1.6),size,ox,oy,sc);
+    });
+    if(t>=1) applyOp(S,op,PL.k+1);
+  }else if(seg.type==='flip'){
+    if(!seg.S2){seg.S2=cloneState(S);seg.cx=opFlip(seg.S2);}
+    const tt=ease(t),c=Math.cos(Math.PI*tt),cx=seg.cx;
+    const src=tt<.5?S:seg.S2;
+    const sh=src.f.slice().sort((a,b)=>a.z-b.z).map(f=>[fillOfF(f),f.pts.map((v,i)=>i%2?v:cx+(v-cx)*Math.abs(c))]);
+    paint((ctx,size,ox,oy,sc)=>drawLayer(ctx,m,{sh,vb},1,size,ox,oy,sc));
+    if(t>=1) PL.S=S===PL.S?seg.S2:PL.S;
+  }else if(seg.type==='rot'){
+    const b=bboxOf(S.f),cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2,a=seg.deg*Math.PI/180*ease(t),co=Math.cos(a),si=Math.sin(a);
+    const sh=liveShapes(S).map(([f,p])=>[f,p.map((v,i)=>i%2?cy+(p[i-1]-cx)*si+(v-cy)*co:cx+(v-cx)*co-(p[i+1]-cy)*si)]);
+    paint((ctx,size,ox,oy,sc)=>drawLayer(ctx,m,{sh,vb},1,size,ox,oy,sc));
+    if(t>=1) opRot(S,seg.deg);
+  }else if(seg.type==='key'){
+    const tt=ease(t);
+    paint((ctx,size,ox,oy,sc)=>{
+      drawLayer(ctx,m,{sh:liveShapes(S),vb},1-tt,size,ox,oy,sc);
+      drawLayer(ctx,m,{sh:seg.shapes.map(x=>[x[0],x[1]]),vb},tt,size,ox,oy,sc);
+    });
+    if(t>=1) opKey(S,seg.shapes);
+  }else if(seg.type==='celebrate'){
+    const pop=t<.3?.85+.25*ease(t/.3):1.1-.1*ease(Math.min(1,(t-.3)/.3));
+    paint((ctx,size,ox,oy,sc)=>{
+      ctx.save();const c=size/2;ctx.translate((ox+c)*sc,(oy+c)*sc);ctx.scale(pop,pop);ctx.translate(-(ox+c)*sc,-(oy+c)*sc);
+      drawLayer(ctx,m,{sh:s.sh,ln:s.ln,dots:s.dots,vb},1,size,ox,oy,sc);ctx.restore();
+      confetti(ctx,t,PL.canvas.width,PL.canvas.height);
+    });
+    if(!seg.chimed&&PL.sound){seg.chimed=1;chime();}
+  }
+  if(t>=1){PL.si++;PL.t0=now;}
+  PL.raf=requestAnimationFrame(tick);
+}
+const CONF=Array.from({length:46},(_,i)=>({x:Math.random(),d:.15+Math.random()*.5,s:.6+Math.random(),r:Math.random()*6,c:['#E8552D','#F4A93C','#7FB8EA','#F4A3B8','#9ED08A','#B9A3E3'][i%6]}));
+function confetti(ctx,t,W,H){
+  CONF.forEach(p=>{const y=(-.1+t*1.3*p.s)*H,x=(p.x+Math.sin(t*6+p.r)*.03)*W;if(y<0||y>H)return;
+    ctx.save();ctx.translate(x,y);ctx.rotate(p.r+t*5);ctx.fillStyle=p.c;const z=Math.min(W,H)*.018;ctx.beginPath();ctx.moveTo(-z,-z);ctx.lineTo(z,-z);ctx.lineTo(-z,z);ctx.closePath();ctx.fill();ctx.restore();});
+}
+function renderIdle(){
+  const m=PL.m,s=m.steps[PL.k],vb=PL.vb;
+  if(s.done){paint((ctx,size,ox,oy,sc)=>drawLayer(ctx,m,{sh:s.sh,ln:s.ln,dots:s.dots,vb},1,size,ox,oy,sc));return;}
+  paint((ctx,size,ox,oy,sc)=>drawLayer(ctx,m,{sh:liveShapes(PL.S),ln:preLines(PL.S),vb},1,size,ox,oy,sc));
+}
+// ---- 音效
+let AC=null;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC;}
+function paperSound(){
+  const a=ac();if(!a)return;const len=.28,buf=a.createBuffer(1,a.sampleRate*len,a.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++){const x=i/d.length;d[i]=(Math.random()*2-1)*Math.pow(1-x,2)*(x<.08?x/.08:1);}
+  const src=a.createBufferSource();src.buffer=buf;const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=2600;f.Q.value=.7;
+  const g=a.createGain();g.gain.value=.35;src.connect(f).connect(g).connect(a.destination);src.start();
+}
+function chime(){
+  const a=ac();if(!a)return;[[784,0],[988,.12],[1319,.24]].forEach(([fr,dt])=>{
+    const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=fr;const t=a.currentTime+dt;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.22,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.9);
+    o.connect(g).connect(a.destination);o.start(t);o.stop(t+1);});
+}
+
+// ---- 介面
+function buildPlayer(){
+  if(document.getElementById('player')) return;
+  const d=document.createElement('div');d.id='player';d.hidden=true;
+  d.innerHTML=`
+  <div class="pl-top"><div class="pl-title" id="plTitle"></div><div class="pl-dots" id="plDots"></div>
+    <div class="pl-tools"><button type="button" id="plSlow"></button><button type="button" id="plSound"></button><button type="button" id="plFull">全螢幕</button><button type="button" id="plClose">關閉</button></div></div>
+  <div class="pl-main"><div class="pl-stage"><canvas id="plCanvas"></canvas></div>
+    <div class="pl-side"><div class="pl-num" id="plNum"></div><div class="pl-text" id="plText"></div>
+      <div class="pl-legend"><span><i class="lv"></i>谷摺：往自己摺</span><span><i class="lm"></i>山摺：往後摺</span></div></div></div>
+  <div class="pl-bottom"><button type="button" class="pl-btn" id="plPrev">上一步</button><button type="button" class="pl-btn" id="plReplay">重播</button><button type="button" class="pl-btn main" id="plNext">下一步</button></div>`;
+  document.body.appendChild(d);
+  PL.canvas=document.getElementById('plCanvas');PL.ctx=PL.canvas.getContext('2d');
+  document.getElementById('plPrev').onclick=()=>go(-1);
+  document.getElementById('plNext').onclick=()=>go(1);
+  document.getElementById('plReplay').onclick=()=>{ac();playStep();};
+  document.getElementById('plClose').onclick=closePlayer;
+  document.getElementById('plSlow').onclick=()=>{PL.slow=!PL.slow;updateUI();};
+  document.getElementById('plSound').onclick=()=>{PL.sound=!PL.sound;if(PL.sound)ac();updateUI();};
+  document.getElementById('plFull').onclick=()=>{const e=document.getElementById('player');if(document.fullscreenElement)document.exitFullscreen();else if(e.requestFullscreen)e.requestFullscreen().catch(()=>{});};
+  window.addEventListener('keydown',e=>{
+    if(document.getElementById('player').hidden) return;
+    if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(1);}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(-1);}
+    else if(e.key==='r'||e.key==='R'){playStep();}
+    else if(e.key==='Escape'&&!document.fullscreenElement){closePlayer();}
+  });
+  window.addEventListener('resize',()=>{if(!document.getElementById('player').hidden){sizeCanvas();if(PL.done)renderIdle();}});
+  document.addEventListener('fullscreenchange',()=>setTimeout(()=>{sizeCanvas();if(PL.done)renderIdle();},60));
+}
+function sizeCanvas(){
+  const box=PL.canvas.parentElement.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  PL.canvas.width=Math.max(10,Math.round(box.width*dpr));PL.canvas.height=Math.max(10,Math.round(box.height*dpr));
+  PL.canvas.style.width=box.width+'px';PL.canvas.style.height=box.height+'px';
+}
+function go(dir){
+  ac();const n=PL.m.steps.length;const k=PL.k+dir;
+  if(k<0||k>=n){if(dir>0&&!PL.done){cancelAnimationFrame(PL.raf);PL.si=PL.seq.length;finishNow();}return;}
+  PL.k=k;playStep();
+}
+function finishNow(){
+  const m=PL.m;
+  if(m.states[PL.k+1]) PL.S=cloneState(m.states[PL.k+1]);
+  PL.done=true;renderIdle();updateUI();
+}
+function updateUI(){
+  const m=PL.m,s=m.steps[PL.k],n=m.steps.length;
+  document.getElementById('plTitle').textContent=`摺紙：${m.name}`;
+  document.getElementById('plNum').textContent=s.done?'完成！':`第 ${PL.k+1} 步`;
+  document.getElementById('plText').textContent=s.done?s.t.replace(/^完成！/,''):s.t;
+  document.getElementById('plDots').innerHTML=m.steps.map((_,i)=>`<i class="${i<PL.k?'past':i===PL.k?'now':''}"></i>`).join('')+`<span>${PL.k+1} / ${n}</span>`;
+  document.getElementById('plSlow').textContent=PL.slow?'速度：慢':'速度：標準';
+  document.getElementById('plSound').textContent=PL.sound?'音效：開':'音效：關';
+  document.getElementById('plPrev').disabled=PL.k===0;
+  const nx=document.getElementById('plNext');nx.disabled=PL.k===n-1;nx.classList.toggle('ready',PL.done&&PL.k<n-1);
+}
+function openPlayer(id){
+  buildPlayer();PL.m=MODELS.find(x=>x.id===id);PL.k=0;
+  const el=document.getElementById('player');el.hidden=false;document.body.style.overflow='hidden';
+  requestAnimationFrame(()=>{sizeCanvas();playStep();});
+}
+function closePlayer(){cancelAnimationFrame(PL.raf);if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});document.getElementById('player').hidden=true;document.body.style.overflow='';}
+
 // ===== 介面 =====
 const COLORS=[['天空藍','#7FB8EA'],['橘色','#F6A860'],['粉紅','#F4A3B8'],['草綠','#9ED08A'],['紫色','#B9A3E3'],['黃色','#F7D35C']];
 const st={sel:new Set(['dog']),steps:true,crease:true,per:4,fs:'L',showText:true,copies:1,bg:'white',range:0,color:'#7FB8EA',unit:'',namebox:true};
@@ -892,11 +1215,19 @@ function renderModels(){
       b.appendChild(thumb(m,52));
       b.appendChild(el('span',{class:'mname'},m.name));
       b.appendChild(el('span',{class:'msteps'},`${m.steps.length} 步`));
-      b.addEventListener('click',()=>{st.sel.has(m.id)?st.sel.delete(m.id):st.sel.add(m.id);renderModels();refresh();});
+      b.addEventListener('click',()=>{st.sel.has(m.id)?st.sel.delete(m.id):st.sel.add(m.id);renderModels();renderPlayList();refresh();});
       grid.appendChild(b);
     });
     g.appendChild(grid);box.appendChild(g);
   });
+}
+function renderPlayList(){
+  const box=document.getElementById('playList');box.innerHTML='';
+  const ms=MODELS.filter(m=>st.sel.has(m.id));
+  if(!ms.length){box.appendChild(el('div',{class:'hint2',style:'margin:0'},'先在上面選一個作品。'));return;}
+  ms.forEach(m=>{const b=el('button',{type:'button',class:'playb'},`▶ ${m.name}`);b.addEventListener('click',()=>openPlayer(m.id));box.appendChild(b);});
+  const top=document.getElementById('playTop');top.innerHTML='';
+  ms.slice(0,6).forEach(m=>{const b=el('button',{type:'button',class:'playb'},`▶ ${m.name} 動畫帶領`);b.addEventListener('click',()=>openPlayer(m.id));top.appendChild(b);});
 }
 function seg(id,key,opts,cast){
   const box=document.getElementById(id);box.innerHTML='';
@@ -980,7 +1311,7 @@ async function runExport(kind,btn){
 }
 
 function init(){
-  renderModels();renderColors();
+  renderModels();renderColors();renderPlayList();
   seg('perSeg','per',[[2,'2 步'],[4,'4 步'],[6,'6 步']]);
   seg('fsSeg','fs',[['L','大'],['XL','特大']]);
   seg('txtSeg','showText',[[true,'顯示說明'],[false,'只看圖']]);
@@ -990,8 +1321,8 @@ function init(){
   const ck=(id,key)=>{const e=document.getElementById(id);e.checked=st[key];e.addEventListener('change',()=>{st[key]=e.checked;refresh();});};
   ck('ckSteps','steps');ck('ckCrease','crease');ck('ckName','namebox');
   document.getElementById('unit').addEventListener('input',e=>{st.unit=e.target.value.trim();refresh();});
-  document.getElementById('selAll').addEventListener('click',()=>{MODELS.forEach(m=>st.sel.add(m.id));renderModels();refresh();});
-  document.getElementById('selNone').addEventListener('click',()=>{st.sel.clear();renderModels();refresh();});
+  document.getElementById('selAll').addEventListener('click',()=>{MODELS.forEach(m=>st.sel.add(m.id));renderModels();renderPlayList();refresh();});
+  document.getElementById('selNone').addEventListener('click',()=>{st.sel.clear();renderModels();renderPlayList();refresh();});
   document.querySelectorAll('.dlb').forEach(b=>b.addEventListener('click',()=>runExport(b.dataset.k,b)));
   let rw=null;window.addEventListener('resize',()=>{clearTimeout(rw);rw=setTimeout(refresh,250);});
   refresh();
